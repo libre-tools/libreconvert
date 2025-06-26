@@ -2,6 +2,12 @@
 
 **libreconvert** is a powerful, offline-first file converter application built with Flutter for desktop platforms. It supports a wide range of file types including images, audio, video, and documents, leveraging system-installed tools like FFmpeg, Pandoc, and ImageMagick for conversions.
 
+## Support
+
+If you find this project useful, consider supporting it by buying me a coffee:
+
+[![Buy me a coffee](https://img.buymeacoffee.com/button-api/?text=Buy%20me%20a%20coffee&emoji=&slug=libretools&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff)](https://www.buymeacoffee.com/libretools)
+
 ## Overview
 
 libreconvert is designed to provide a user-friendly experience for converting files locally on your desktop, ensuring privacy and accessibility without requiring an internet connection. The application features a clean GUI for selecting files, choosing output formats, monitoring conversion progress, and configuring advanced settings.
@@ -32,7 +38,7 @@ libreconvert is designed to provide a user-friendly experience for converting fi
 
 ### Installation
 
-1. Clone the repository:
+1. Clone the repository (replace `yourusername` with the actual GitHub username or organization):
 
    ```bash
    git clone https://github.com/yourusername/libreconvert.git
