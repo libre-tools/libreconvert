@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:image/image.dart' as img;
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
 
 final logger = Logger();
 
@@ -15,9 +15,9 @@ class ConversionUtils {
       bool imagemagickAvailable = await checkBinaryAvailability('convert');
       if (!imagemagickAvailable) {
         logger.e(
-          'ImageMagick is not installed or not found in PATH. Falling back to basic image conversion. Please install ImageMagick for full format support.',
+          'ImageMagick is not installed or not found in PATH. Please install ImageMagick for image conversions.',
         );
-        return await _convertImageFallback(inputPath, outputPath, format);
+        return false;
       }
 
       // Construct ImageMagick convert command
@@ -39,63 +39,7 @@ class ConversionUtils {
       }
     } catch (e) {
       logger.e('Error converting image with ImageMagick: $e');
-      return await _convertImageFallback(inputPath, outputPath, format);
-    }
-  }
-
-  static Future<bool> _convertImageFallback(
-    String inputPath,
-    String outputPath,
-    String format,
-  ) async {
-    try {
-      // Read the image file
-      final imageData = await File(inputPath).readAsBytes();
-      final image = img.decodeImage(imageData);
-
-      if (image == null) {
-        logger.e('Failed to decode image from $inputPath');
-        return false;
-      }
-
-      // Convert to the target format
-      final outputFile = File('$outputPath.${format.toLowerCase()}');
-      final outputData = _encodeImage(image, format.toLowerCase());
-
-      if (outputData == null) {
-        logger.e(
-          'Unsupported format: $format. Conversion for this format is not supported by the fallback image library.',
-        );
-        return false;
-      }
-
-      await outputFile.writeAsBytes(outputData);
-      logger.i(
-        'Image converted successfully to $outputPath.${format.toLowerCase()} using fallback method',
-      );
-      return true;
-    } catch (e) {
-      logger.e('Error converting image with fallback method: $e');
       return false;
-    }
-  }
-
-  static List<int>? _encodeImage(img.Image image, String format) {
-    switch (format) {
-      case 'png':
-        return img.encodePng(image);
-      case 'jpg':
-      case 'jpeg':
-        return img.encodeJpg(image, quality: 85);
-      case 'bmp':
-        return img.encodeBmp(image);
-      case 'gif':
-        return img.encodeGif(image);
-      case 'webp':
-        // WebP encoding is not directly supported in current 'image' package version.
-        return null;
-      default:
-        return null;
     }
   }
 
@@ -241,6 +185,48 @@ class ConversionUtils {
         logger.e('Fallback error checking $binaryName availability: $e2');
         return false;
       }
+    }
+  }
+
+  static Future<String?> generateVideoThumbnail(String videoPath) async {
+    try {
+      // Check if FFmpeg is available
+      bool ffmpegAvailable = await checkBinaryAvailability('ffmpeg');
+      if (!ffmpegAvailable) {
+        logger.e(
+          'Error: FFmpeg is not installed or not found in PATH. Please install FFmpeg to generate video thumbnails.',
+        );
+        return null;
+      }
+
+      // Generate a temporary file path for the thumbnail
+      final tempDir = await getTemporaryDirectory();
+      final outputPath =
+          '${tempDir.path}/thumbnail_${DateTime.now().millisecondsSinceEpoch}.png';
+
+      // Construct FFmpeg command to extract a thumbnail
+      List<String> arguments = [
+        '-i',
+        videoPath,
+        '-ss',
+        '00:00:01', // Seek to 1 second
+        '-vframes',
+        '1', // Extract 1 frame
+        outputPath,
+      ];
+
+      // Execute FFmpeg command
+      final result = await Process.run('ffmpeg', arguments);
+      if (result.exitCode == 0) {
+        logger.i('Video thumbnail generated successfully at $outputPath');
+        return outputPath;
+      } else {
+        logger.e('FFmpeg error: ${result.stderr}');
+        return null;
+      }
+    } catch (e) {
+      logger.e('Error generating video thumbnail: $e');
+      return null;
     }
   }
 }

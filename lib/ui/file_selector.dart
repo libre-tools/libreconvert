@@ -1,11 +1,6 @@
-import 'dart:io';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
-import 'package:pdf_render/pdf_render.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:libreconvert/models/conversion_task.dart';
@@ -315,31 +310,15 @@ class _FileSelectorState extends State<FileSelector> {
                             child: Stack(
                               children: [
                                 Center(
-                                  child: FutureBuilder<Widget>(
-                                    future: _getFilePreview(
-                                      filePath,
-                                      extension,
-                                      previewIcon,
+                                  child: Icon(
+                                    previewIcon,
+                                    size: 50,
+                                    color: const Color.fromRGBO(
+                                      107,
+                                      114,
+                                      128,
+                                      1,
                                     ),
-                                    builder: (context, snapshot) {
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.waiting) {
-                                        return CircularProgressIndicator();
-                                      }
-                                      if (snapshot.hasData) {
-                                        return snapshot.data!;
-                                      }
-                                      return Icon(
-                                        previewIcon,
-                                        size: 50,
-                                        color: const Color.fromRGBO(
-                                          107,
-                                          114,
-                                          128,
-                                          1,
-                                        ),
-                                      );
-                                    },
                                   ),
                                 ),
                                 if (task.filePath.isNotEmpty)
@@ -427,99 +406,6 @@ class _FileSelectorState extends State<FileSelector> {
           ),
         ),
       ],
-    );
-  }
-
-  Future<Widget> _getFilePreview(
-    String filePath,
-    String extension,
-    IconData defaultIcon,
-  ) async {
-    try {
-      if (['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'].contains(extension)) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.file(
-            File(filePath),
-            fit: BoxFit.cover,
-            width: 80,
-            height: 80,
-            errorBuilder: (context, error, stackTrace) {
-              return Icon(
-                Icons.image,
-                size: 50,
-                color: const Color.fromRGBO(107, 114, 128, 1),
-              );
-            },
-          ),
-        );
-      } else if ([
-        'mp4',
-        'mkv',
-        'avi',
-        'mov',
-        'wmv',
-        'flv',
-      ].contains(extension)) {
-        final thumbnailPath = await VideoThumbnail.thumbnailFile(
-          video: filePath,
-          thumbnailPath: (await getTemporaryDirectory()).path,
-          imageFormat: ImageFormat.PNG,
-          maxHeight: 100,
-          maxWidth: 100,
-          quality: 100,
-        );
-        if (thumbnailPath != null) {
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.file(
-              File(thumbnailPath),
-              fit: BoxFit.cover,
-              width: 80,
-              height: 80,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(
-                  Icons.videocam,
-                  size: 50,
-                  color: const Color.fromRGBO(107, 114, 128, 1),
-                );
-              },
-            ),
-          );
-        }
-      } else if (extension == 'pdf') {
-        final doc = await PdfDocument.openFile(filePath);
-        if (doc.pageCount > 0) {
-          final page = await doc.getPage(1);
-          final pageImage = await page.render();
-          if (pageImage.imageIfAvailable != null) {
-            await doc.dispose();
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: RawImage(
-                image: pageImage.imageIfAvailable,
-                fit: BoxFit.cover,
-                width: 80,
-                height: 80,
-              ),
-            );
-          } else {
-            await doc.dispose();
-            return Icon(
-              Icons.description,
-              size: 50,
-              color: const Color.fromRGBO(107, 114, 128, 1),
-            );
-          }
-        }
-      }
-    } catch (e) {
-      // If any error occurs during preview generation, fall back to the default icon
-    }
-    return Icon(
-      defaultIcon,
-      size: 50,
-      color: const Color.fromRGBO(107, 114, 128, 1),
     );
   }
 }
