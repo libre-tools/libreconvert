@@ -48,6 +48,22 @@ static void my_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 1280, 720);
+  // Set the window icon
+  gchar *icon_path = g_strdup("/home/raja/Desktop/libretools/libreconvert/linux/runner/resources/app_icon.png");
+  if (g_file_test(icon_path, G_FILE_TEST_EXISTS)) {
+    g_print("Icon file found at: %s\n", icon_path);
+    GdkPixbuf *icon = gdk_pixbuf_new_from_file(icon_path, NULL);
+    if (icon) {
+      g_print("Icon loaded successfully.\n");
+      gtk_window_set_icon(window, icon);
+      g_object_unref(icon);
+    } else {
+      g_print("Failed to load icon from: %s\n", icon_path);
+    }
+  } else {
+    g_print("Icon file not found at: %s\n", icon_path);
+  }
+  g_free(icon_path);
   gtk_widget_show(GTK_WIDGET(window));
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
