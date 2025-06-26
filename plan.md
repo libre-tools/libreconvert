@@ -24,10 +24,7 @@ This document outlines a comprehensive plan to develop "libreconvert", a powerfu
 
 ## 4. Advanced Features
 
-- **Conversion Presets**: Allow users to save and load predefined conversion settings (e.g., "High Quality MP4" or "PDF to DOCX with formatting") for quick reuse.
-- **Custom Command Options**: Provide an advanced mode where users can specify custom FFmpeg or Pandoc command parameters for fine-tuned control over conversions (e.g., bitrate, resolution for video, or specific markup options for documents).
-- **Format-Specific Settings**: Offer additional options based on file type, such as image compression levels, audio bitrate, or document layout preferences.
-- **Conversion Queue Management**: Enable users to prioritize or pause/resume conversions in a queue, especially useful for batch processing large numbers of files.
+- **Manual File Saving**: Display a "Save" button for each completed conversion, allowing users to manually choose the save location for the converted file. Auto-saving will be disabled.
 - **Preview and Validation**: Where feasible, provide previews of converted files (e.g., thumbnails for images/videos) and validate output to ensure successful conversion.
 - **Logging and History**: Maintain a history of conversions with detailed logs for troubleshooting or re-running past conversions with the same settings.
 
@@ -56,8 +53,9 @@ This document outlines a comprehensive plan to develop "libreconvert", a powerfu
 - **Step 2: UI Development**: Build the main interface with file selection, format options, conversion controls, and advanced settings using Flutter widgets.
 - **Step 3: File Handling**: Implement file selection using packages like 'file_picker' for cross-platform file dialogs.
 - **Step 4: Conversion Logic**: Develop modules for image conversion with the 'image' package (including HEIC support), and system calls for FFmpeg and Pandoc, including error handling, path configuration, and custom command support.
-- **Step 5: Concurrency and Queue Management**: Integrate Dart isolates to manage multiple conversions and implement a queue system for batch processing with pause/resume capabilities.
-- **Step 6: Advanced Features**: Add presets, custom command interfaces, format-specific settings, conversion history, and logging functionalities.
+- **Step 5: Concurrency**: Integrate Dart isolates to manage multiple conversions, ensuring the UI remains responsive during batch processing.
+- **Step 6: Manual Saving**: Implement the manual save feature, allowing users to save converted files to a location of their choice.
+- **Step 7: Advanced Features**: Add conversion history and logging functionalities.
 - **Step 7: Testing**: Test the app on different desktop platforms to ensure compatibility, focusing on file conversion accuracy (especially for HEIC and other major formats), UI responsiveness, and advanced feature functionality.
 - **Step 8: Packaging**: Prepare the app for distribution, creating executables for Windows, macOS, and Linux under the name "libreconvert".
 

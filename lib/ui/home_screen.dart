@@ -3,7 +3,14 @@ import 'package:libreconvert/ui/format_selector.dart';
 import 'package:libreconvert/ui/common/header_widget.dart';
 import 'package:libreconvert/models/conversion_task.dart';
 import 'package:libreconvert/utils/conversion_utils.dart';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,6 +51,11 @@ class _HomeScreenState extends State<HomeScreen> {
           currentFileType = 'document';
           currentCategory = 'Document';
         }
+      } else {
+        // Reset app state when files are cleared
+        selectedFormat = null;
+        conversionTasks = [];
+        isConverting = false;
       }
     });
   }
@@ -80,27 +92,32 @@ class _HomeScreenState extends State<HomeScreen> {
         }).toList();
       });
 
-      bool success = false;
-      String outputPath = '${task.filePath.split('.').first}_converted';
+      Map<String, dynamic> result;
+      final tempDir = await getTemporaryDirectory();
+      final baseOutputPath =
+          '${tempDir.path}/${DateTime.now().millisecondsSinceEpoch}_converted';
       if (task.fileType == 'image') {
-        success = await ConversionUtils.convertImage(
+        result = await ConversionUtils.convertImageWithIsolate(
           task.filePath,
-          outputPath,
+          baseOutputPath,
           task.targetFormat,
         );
       } else if (task.fileType == 'audio' || task.fileType == 'video') {
-        success = await ConversionUtils.convertAudioVideo(
+        result = await ConversionUtils.convertAudioVideoWithIsolate(
           task.filePath,
-          outputPath,
+          baseOutputPath,
           task.targetFormat,
         );
       } else {
-        success = await ConversionUtils.convertDocument(
+        result = await ConversionUtils.convertDocumentWithIsolate(
           task.filePath,
-          outputPath,
+          baseOutputPath,
           task.targetFormat,
         );
       }
+
+      bool success = result['success'] as bool;
+      String tempOutputPath = success ? result['tempOutputPath'] as String : '';
 
       setState(() {
         conversionTasks = conversionTasks.map((t) {
@@ -112,9 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
               targetFormat: t.targetFormat,
               status: success ? 'Completed' : 'Failed',
               progress: success ? 1.0 : 0.0,
-              outputPath: success
-                  ? '$outputPath.${task.targetFormat.toLowerCase()}'
-                  : null,
+              outputPath: success ? tempOutputPath : null,
               errorMessage: success ? null : 'Conversion failed',
             );
           }
@@ -128,9 +143,142 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _saveAllConvertedFiles() async {
+    final completedTasks = conversionTasks
+        .where((task) => task.status == 'Completed' && task.outputPath != null)
+        .toList();
+
+    if (completedTasks.isEmpty) {
+      if (mounted) {
+        showToast(
+          context: context,
+          builder: (context, overlay) {
+            return SurfaceCard(
+              child: Basic(
+                title: const Text('No Files to Save'),
+                subtitle: const Text(
+                  'There are no completed conversions to save.',
+                ),
+                trailing: PrimaryButton(
+                  size: ButtonSize.small,
+                  onPressed: () {
+                    overlay.close();
+                  },
+                  child: const Text('Dismiss'),
+                ),
+                trailingAlignment: Alignment.center,
+              ),
+            );
+          },
+          location: ToastLocation.bottomCenter,
+        );
+      }
+      return;
+    }
+
+    for (var task in completedTasks) {
+      final fileName =
+          '${task.filePath.split('/').last.split('.').first}_converted.${task.targetFormat.toLowerCase()}';
+      String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save $fileName',
+        fileName: fileName,
+      );
+
+      if (outputFile != null) {
+        try {
+          final sourceFile = File(task.outputPath!);
+          if (await sourceFile.exists()) {
+            await sourceFile.copy(outputFile);
+            if (mounted) {
+              showToast(
+                context: context,
+                builder: (context, overlay) {
+                  return SurfaceCard(
+                    child: Basic(
+                      title: const Text('File Saved'),
+                      subtitle: Text('File saved to $outputFile'),
+                      trailing: PrimaryButton(
+                        size: ButtonSize.small,
+                        onPressed: () {
+                          overlay.close();
+                        },
+                        child: const Text('Dismiss'),
+                      ),
+                      trailingAlignment: Alignment.center,
+                    ),
+                  );
+                },
+                location: ToastLocation.topRight,
+              );
+            }
+          } else {
+            logger.e('Temporary file does not exist: ${task.outputPath}');
+            if (mounted) {
+              showToast(
+                context: context,
+                builder: (context, overlay) {
+                  return SurfaceCard(
+                    child: Basic(
+                      title: const Text('Error Saving File'),
+                      subtitle: const Text(
+                        'The temporary converted file could not be found. It may have been deleted or moved.',
+                      ),
+                      trailing: PrimaryButton(
+                        size: ButtonSize.small,
+                        onPressed: () {
+                          overlay.close();
+                        },
+                        child: const Text('Dismiss'),
+                      ),
+                      trailingAlignment: Alignment.center,
+                    ),
+                  );
+                },
+                location: ToastLocation.topRight,
+              );
+            }
+          }
+        } catch (e) {
+          logger.e(
+            'Error saving file from ${task.outputPath} to $outputFile: $e',
+          );
+          if (mounted) {
+            showToast(
+              context: context,
+              builder: (context, overlay) {
+                return SurfaceCard(
+                  child: Basic(
+                    title: const Text('Error Saving File'),
+                    subtitle: Text(
+                      'An error occurred while saving the file: $e',
+                    ),
+                    trailing: PrimaryButton(
+                      size: ButtonSize.small,
+                      onPressed: () {
+                        overlay.close();
+                      },
+                      child: const Text('Dismiss'),
+                    ),
+                    trailingAlignment: Alignment.center,
+                  ),
+                );
+              },
+              location: ToastLocation.topRight,
+            );
+          }
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final hasCompletedTasks = conversionTasks.any(
+      (task) => task.status == 'Completed',
+    );
+    final hasSelectedFiles = selectedFiles.isNotEmpty;
+
+    return Material(
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Container(
@@ -183,6 +331,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     onFilesSelected: _updateSelectedFiles,
                     conversionTasks: conversionTasks,
                   ),
+                  if (hasCompletedTasks && hasSelectedFiles)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 24.0),
+                      child: PrimaryButton(
+                        onPressed: _saveAllConvertedFiles,
+                        child: const Text('Save'),
+                      ),
+                    ),
                 ],
               ),
             ),

@@ -392,14 +392,17 @@ class _FileSelectorState extends State<FileSelector> {
                 ),
                 DestructiveButton(
                   enabled: true,
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() {
                       selectedFiles.clear();
                       currentFileCategory = null;
                       widget.onFilesSelected([], []);
                     });
+                    // Reset app state by notifying parent to clear conversion tasks
+                    // This can be achieved by passing a callback or using a state management solution
+                    // For now, we'll assume the parent listens to empty file selection to reset state
                   },
-                  child: const Text('Clear all'),
+                  child: const Text('Reset App'),
                 ),
               ],
             ),
