@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import 'package:libreconvert/ui/home_screen.dart';
-import 'package:libreconvert/bloc/conversion_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,28 +10,24 @@ void main() async {
   windowManager.setResizable(false);
 
   windowManager.setTitleBarStyle(TitleBarStyle.normal);
-  windowManager.setBackgroundColor(
-    Colors.white,
-  ); // Matches default light theme background
-  runApp(const LibreConvertApp());
+  windowManager.setTitle('LibreConvert');
+
+  runApp(const MyApp());
 }
 
-class LibreConvertApp extends StatelessWidget {
-  const LibreConvertApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => ConversionBloc(),
-      child: shadcn.ShadcnApp(
-        title: 'libreconvert',
-        theme: shadcn.ThemeData(
-          colorScheme: shadcn.ColorSchemes.lightNeutral(),
-          radius: 0.5,
-        ),
-        debugShowCheckedModeBanner: false,
-        home: const HomeScreen(),
+    return shadcn.ShadcnApp(
+      title: 'LibreConvert',
+      theme: shadcn.ThemeData(
+        colorScheme: shadcn.ColorSchemes.lightNeutral(),
+        radius: 0.5,
       ),
+      debugShowCheckedModeBanner: false,
+      home: const HomeScreen(),
     );
   }
 }

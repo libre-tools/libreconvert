@@ -11,6 +11,44 @@ class ConversionUtils {
     String format,
   ) async {
     try {
+      // Check if ImageMagick is available
+      bool imagemagickAvailable = await checkBinaryAvailability('convert');
+      if (!imagemagickAvailable) {
+        logger.e(
+          'ImageMagick is not installed or not found in PATH. Falling back to basic image conversion. Please install ImageMagick for full format support.',
+        );
+        return await _convertImageFallback(inputPath, outputPath, format);
+      }
+
+      // Construct ImageMagick convert command
+      List<String> arguments = [
+        inputPath,
+        '$outputPath.${format.toLowerCase()}',
+      ];
+
+      // Execute ImageMagick convert command
+      final result = await Process.run('convert', arguments);
+      if (result.exitCode == 0) {
+        logger.i(
+          'Image converted successfully to $outputPath.${format.toLowerCase()} using ImageMagick',
+        );
+        return true;
+      } else {
+        logger.e('ImageMagick error: ${result.stderr}');
+        return false;
+      }
+    } catch (e) {
+      logger.e('Error converting image with ImageMagick: $e');
+      return await _convertImageFallback(inputPath, outputPath, format);
+    }
+  }
+
+  static Future<bool> _convertImageFallback(
+    String inputPath,
+    String outputPath,
+    String format,
+  ) async {
+    try {
       // Read the image file
       final imageData = await File(inputPath).readAsBytes();
       final image = img.decodeImage(imageData);
@@ -26,18 +64,18 @@ class ConversionUtils {
 
       if (outputData == null) {
         logger.e(
-          'Unsupported format: $format. Conversion for this format is not currently supported by the image library.',
+          'Unsupported format: $format. Conversion for this format is not supported by the fallback image library.',
         );
         return false;
       }
 
       await outputFile.writeAsBytes(outputData);
       logger.i(
-        'Image converted successfully to $outputPath.${format.toLowerCase()}',
+        'Image converted successfully to $outputPath.${format.toLowerCase()} using fallback method',
       );
       return true;
     } catch (e) {
-      logger.e('Error converting image: $e');
+      logger.e('Error converting image with fallback method: $e');
       return false;
     }
   }
@@ -54,8 +92,7 @@ class ConversionUtils {
       case 'gif':
         return img.encodeGif(image);
       case 'webp':
-        // TODO: WebP encoding is not directly supported in current 'image' package version.
-        // Consider fallback to FFmpeg or another library for WebP support.
+        // WebP encoding is not directly supported in current 'image' package version.
         return null;
       default:
         return null;

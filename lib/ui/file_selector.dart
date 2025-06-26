@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:desktop_drop/desktop_drop.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:pdf_render/pdf_render.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,6 +27,12 @@ class FileSelector extends StatefulWidget {
 class _FileSelectorState extends State<FileSelector> {
   List<String> selectedFiles = [];
   String? currentFileCategory;
+
+  @override
+  void didUpdateWidget(covariant FileSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // No automatic clearing of selected files
+  }
 
   Future<void> _pickFiles() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -59,13 +65,27 @@ class _FileSelectorState extends State<FileSelector> {
         });
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'Mixed file categories are not allowed. Please select files from the same category (e.g., only images, only videos).',
-              ),
-              backgroundColor: Color.fromRGBO(239, 68, 68, 1),
-            ),
+          showToast(
+            context: context,
+            builder: (context, overlay) {
+              return SurfaceCard(
+                child: Basic(
+                  title: const Text('Invalid Selection'),
+                  subtitle: const Text(
+                    'Mixed file categories are not allowed. Please select files from the same category (e.g., only images, only videos).',
+                  ),
+                  trailing: PrimaryButton(
+                    size: ButtonSize.small,
+                    onPressed: () {
+                      overlay.close();
+                    },
+                    child: const Text('Dismiss'),
+                  ),
+                  trailingAlignment: Alignment.center,
+                ),
+              );
+            },
+            location: ToastLocation.bottomCenter,
           );
         }
       }
@@ -144,60 +164,64 @@ class _FileSelectorState extends State<FileSelector> {
                   .toList();
               if (_checkFileCategoryConsistency(extensions)) {
                 setState(() {
-                  selectedFiles.addAll(paths);
+                  selectedFiles = paths;
                   widget.onFilesSelected(selectedFiles, extensions);
                 });
               } else {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Mixed file categories are not allowed. Please drop files from the same category (e.g., only images, only videos).',
-                      ),
-                      backgroundColor: Color.fromRGBO(239, 68, 68, 1),
-                    ),
+                  showToast(
+                    context: context,
+                    builder: (context, overlay) {
+                      return SurfaceCard(
+                        child: Basic(
+                          title: const Text('Invalid Drop'),
+                          subtitle: const Text(
+                            'Mixed file categories are not allowed. Please drop files from the same category (e.g., only images, only videos).',
+                          ),
+                          trailing: PrimaryButton(
+                            size: ButtonSize.small,
+                            onPressed: () {
+                              overlay.close();
+                            },
+                            child: const Text('Dismiss'),
+                          ),
+                          trailingAlignment: Alignment.center,
+                        ),
+                      );
+                    },
+                    location: ToastLocation.bottomLeft,
                   );
                 }
               }
             },
-            child: InkWell(
-              splashColor: Colors.transparent,
+            child: GestureDetector(
               onTap: _pickFiles,
-              child: DottedBorder(
-                options: RoundedRectDottedBorderOptions(
-                  dashPattern: [10, 5],
-                  strokeWidth: 2,
-                  radius: const Radius.circular(8),
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: DottedBorder(
+                  options: RoundedRectDottedBorderOptions(
+                    dashPattern: [10, 5],
+                    strokeWidth: 2,
+                    radius: const Radius.circular(8),
 
-                  padding: EdgeInsets.all(16),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: SizedBox(
-                    height: 250,
-                    width: double.infinity,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.cloud_upload,
-                            size: 40,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
-                          Text(
-                            "Drag and drop files here, or click to select files",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
-                              fontSize: 14,
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: SizedBox(
+                      height: 250,
+                      width: double.infinity,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.cloud_upload, size: 40),
+                            Text(
+                              "Drag and drop files here, or click to select files",
+                              textAlign: TextAlign.center,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -210,183 +234,166 @@ class _FileSelectorState extends State<FileSelector> {
             options: RoundedRectDottedBorderOptions(
               dashPattern: [10, 5],
               strokeWidth: 2,
-              padding: EdgeInsets.all(16),
               radius: const Radius.circular(8),
+              padding: EdgeInsets.symmetric(vertical: 8),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: SizedBox(
-                height: 250,
-                width: double.infinity,
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent:
-                        120, // Each grid item width/height constraint
-                    crossAxisSpacing: 8,
-                    mainAxisSpacing: 8,
-                    childAspectRatio: 0.8,
-                  ),
-                  itemCount: selectedFiles.length,
-                  itemBuilder: (context, index) {
-                    final filePath = selectedFiles[index];
-                    final fileName = filePath.split('/').last;
-                    final extension = fileName.split('.').last.toLowerCase();
-                    IconData previewIcon;
-                    if ([
-                      'png',
-                      'jpg',
-                      'jpeg',
-                      'gif',
-                      'bmp',
-                      'webp',
-                    ].contains(extension)) {
-                      previewIcon = Icons.image;
-                    } else if ([
-                      'mp3',
-                      'wav',
-                      'flac',
-                      'ogg',
-                      'aac',
-                      'm4a',
-                    ].contains(extension)) {
-                      previewIcon = Icons.audiotrack;
-                    } else if ([
-                      'mp4',
-                      'mkv',
-                      'avi',
-                      'mov',
-                      'wmv',
-                      'flv',
-                      'gif',
-                    ].contains(extension)) {
-                      previewIcon = Icons.videocam;
-                    } else if ([
-                      'pdf',
-                      'docx',
-                      'odt',
-                      'rtf',
-                      'txt',
-                      'html',
-                      'markdown',
-                      'epub',
-                    ].contains(extension)) {
-                      previewIcon = Icons.description;
-                    } else {
-                      previewIcon = Icons.insert_drive_file;
-                    }
-                    // Check if this file is in the conversion tasks
-                    final task = widget.conversionTasks.firstWhere(
-                      (t) => t.filePath == filePath,
-                      orElse: () => ConversionTask(
-                        id: '',
-                        filePath: '',
-                        fileType: '',
-                        targetFormat: '',
-                      ),
-                    );
+            child: SizedBox(
+              height: 250,
+              width: double.infinity,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 120,
+                ),
+                itemCount: selectedFiles.length,
+                itemBuilder: (context, index) {
+                  final filePath = selectedFiles[index];
+                  final fileName = filePath.split('/').last;
+                  final extension = fileName.split('.').last.toLowerCase();
+                  IconData previewIcon;
+                  if ([
+                    'png',
+                    'jpg',
+                    'jpeg',
+                    'gif',
+                    'bmp',
+                    'webp',
+                  ].contains(extension)) {
+                    previewIcon = Icons.image;
+                  } else if ([
+                    'mp3',
+                    'wav',
+                    'flac',
+                    'ogg',
+                    'aac',
+                    'm4a',
+                  ].contains(extension)) {
+                    previewIcon = Icons.audiotrack;
+                  } else if ([
+                    'mp4',
+                    'mkv',
+                    'avi',
+                    'mov',
+                    'wmv',
+                    'flv',
+                    'gif',
+                  ].contains(extension)) {
+                    previewIcon = Icons.videocam;
+                  } else if ([
+                    'pdf',
+                    'docx',
+                    'odt',
+                    'rtf',
+                    'txt',
+                    'html',
+                    'markdown',
+                    'epub',
+                  ].contains(extension)) {
+                    previewIcon = Icons.description;
+                  } else {
+                    previewIcon = Icons.insert_drive_file;
+                  }
+                  // Check if this file is in the conversion tasks
+                  final task = widget.conversionTasks.firstWhere(
+                    (t) => t.filePath == filePath,
+                    orElse: () => ConversionTask(
+                      id: '',
+                      filePath: '',
+                      fileType: '',
+                      targetFormat: '',
+                    ),
+                  );
 
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Stack(
-                          alignment: Alignment.topRight,
-                          children: [
-                            SizedBox(
-                              height: 80,
-                              width: 80,
-                              child: Stack(
-                                children: [
-                                  Center(
-                                    child: FutureBuilder<Widget>(
-                                      future: _getFilePreview(
-                                        filePath,
-                                        extension,
-                                        previewIcon,
-                                      ),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.connectionState ==
-                                            ConnectionState.waiting) {
-                                          return const CircularProgressIndicator(
-                                            color: Color.fromRGBO(
-                                              107,
-                                              114,
-                                              128,
-                                              1,
-                                            ),
-                                          );
-                                        }
-                                        if (snapshot.hasData) {
-                                          return snapshot.data!;
-                                        }
-                                        return Icon(
-                                          previewIcon,
-                                          size: 50,
-                                          color: const Color.fromRGBO(
-                                            107,
-                                            114,
-                                            128,
-                                            1,
-                                          ),
-                                        );
-                                      },
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          SizedBox(
+                            height: 80,
+                            width: 80,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: FutureBuilder<Widget>(
+                                    future: _getFilePreview(
+                                      filePath,
+                                      extension,
+                                      previewIcon,
                                     ),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return CircularProgressIndicator();
+                                      }
+                                      if (snapshot.hasData) {
+                                        return snapshot.data!;
+                                      }
+                                      return Icon(
+                                        previewIcon,
+                                        size: 50,
+                                        color: const Color.fromRGBO(
+                                          107,
+                                          114,
+                                          128,
+                                          1,
+                                        ),
+                                      );
+                                    },
                                   ),
-                                  if (task.filePath.isNotEmpty)
-                                    Positioned.fill(
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Container(
-                                          color: Colors.black.withValues(
-                                            alpha: 0.3,
-                                          ),
-                                          child: Center(
-                                            child: task.status == 'Completed'
-                                                ? const Icon(
-                                                    Icons.check,
-                                                    color: Colors.green,
-                                                    size: 40,
-                                                  )
-                                                : task.status == 'Failed'
-                                                ? const Icon(
-                                                    Icons.error,
-                                                    color: Colors.red,
-                                                    size: 40,
-                                                  )
-                                                : const CircularProgressIndicator(
-                                                    color: Colors.white,
-                                                  ),
-                                          ),
+                                ),
+                                if (task.filePath.isNotEmpty)
+                                  Positioned.fill(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Container(
+                                        color: Colors.black.withValues(
+                                          alpha: 0.3,
+                                        ),
+                                        child: Center(
+                                          child: task.status == 'Completed'
+                                              ? const Icon(
+                                                  Icons.check,
+                                                  color: Colors.green,
+                                                  size: 40,
+                                                )
+                                              : task.status == 'Failed'
+                                              ? const Icon(
+                                                  Icons.error,
+                                                  color: Colors.red,
+                                                  size: 40,
+                                                )
+                                              : const CircularProgressIndicator(),
                                         ),
                                       ),
                                     ),
-                                ],
-                              ),
+                                  ),
+                              ],
                             ),
-                            IconButton(
-                              iconSize: 20,
-                              icon: const Icon(
-                                Icons.remove_circle,
-                                color: Color.fromRGBO(239, 68, 68, 1),
-                              ),
-                              onPressed: () => _removeFile(index),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          fileName,
-                          style: const TextStyle(
-                            color: Color.fromRGBO(17, 24, 39, 1),
-                            fontSize: 12,
-                            overflow: TextOverflow.ellipsis,
                           ),
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
+                          IconButton.text(
+                            icon: const Icon(
+                              Icons.remove_circle,
+                              color: Color.fromRGBO(239, 68, 68, 1),
+                            ),
+                            onPressed: () => _removeFile(index),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        fileName,
+                        style: const TextStyle(
+                          color: Color.fromRGBO(17, 24, 39, 1),
+                          fontSize: 12,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ],
-                    );
-                  },
-                ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -404,8 +411,17 @@ class _FileSelectorState extends State<FileSelector> {
                     fontSize: 14,
                   ),
                 ),
-                // "Clear all" button removed as per request
-                const SizedBox.shrink(),
+                DestructiveButton(
+                  enabled: true,
+                  onPressed: () {
+                    setState(() {
+                      selectedFiles.clear();
+                      currentFileCategory = null;
+                      widget.onFilesSelected([], []);
+                    });
+                  },
+                  child: const Text('Clear all'),
+                ),
               ],
             ),
           ),

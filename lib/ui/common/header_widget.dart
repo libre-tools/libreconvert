@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class HeaderWidget extends StatelessWidget {
   final String title;
@@ -16,28 +17,35 @@ class HeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w600,
-                color: Color.fromRGBO(17, 24, 39, 1),
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            Text(
-              subtitle,
-              style: const TextStyle(
-                fontSize: 16,
-                color: Color.fromRGBO(107, 114, 128, 1),
+              const Gap(4),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        if (actions.isNotEmpty) Row(children: actions),
+        if (actions.isNotEmpty)
+          Row(mainAxisSize: MainAxisSize.min, children: actions),
       ],
     );
   }

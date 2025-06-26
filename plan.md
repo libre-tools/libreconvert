@@ -1,10 +1,10 @@
-# OpenConvert: Offline File Converter Application Plan
+# libreconvert: Offline File Converter Application Plan
 
-This document outlines a comprehensive plan to develop "OpenConvert", a powerful, offline-first file converter application using Flutter for desktop platforms. The application will support a wide range of file types, including images, audio, video, and documents, leveraging system-installed FFmpeg and Pandoc for conversions.
+This document outlines a comprehensive plan to develop "libreconvert", a powerful, offline-first file converter application using Flutter for desktop platforms. The application will support a wide range of file types, including images, audio, video, and documents, leveraging system-installed FFmpeg and Pandoc for conversions.
 
 ## 1. Application Overview
 
-- "OpenConvert" will be a desktop-focused Flutter application designed to convert a wide range of file types (images, audio, video, and documents) offline.
+- "libreconvert" will be a desktop-focused Flutter application designed to convert a wide range of file types (images, audio, video, and documents) offline.
 - It will feature a user-friendly GUI for selecting files, choosing output formats, and initiating conversions, with progress indicators, error handling, and advanced configuration options.
 
 ## 2. Core Features
@@ -59,7 +59,7 @@ This document outlines a comprehensive plan to develop "OpenConvert", a powerful
 - **Step 5: Concurrency and Queue Management**: Integrate Dart isolates to manage multiple conversions and implement a queue system for batch processing with pause/resume capabilities.
 - **Step 6: Advanced Features**: Add presets, custom command interfaces, format-specific settings, conversion history, and logging functionalities.
 - **Step 7: Testing**: Test the app on different desktop platforms to ensure compatibility, focusing on file conversion accuracy (especially for HEIC and other major formats), UI responsiveness, and advanced feature functionality.
-- **Step 8: Packaging**: Prepare the app for distribution, creating executables for Windows, macOS, and Linux under the name "OpenConvert".
+- **Step 8: Packaging**: Prepare the app for distribution, creating executables for Windows, macOS, and Linux under the name "libreconvert".
 
 ## 8. Additional Considerations
 
