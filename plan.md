@@ -2,12 +2,12 @@
 
 This document outlines a comprehensive plan to develop "libreconvert", a powerful, offline-first file converter application using Flutter for desktop platforms. The application will support a wide range of file types, including images, audio, video, and documents, leveraging system-installed FFmpeg and Pandoc for conversions.
 
-## 1. Application Overview
+## 1. Application Overview [COMPLETED]
 
 - "libreconvert" will be a desktop-focused Flutter application designed to convert a wide range of file types (images, audio, video, and documents) offline.
 - It will feature a user-friendly GUI for selecting files, choosing output formats, and initiating conversions, with progress indicators, error handling, and advanced configuration options.
 
-## 2. Core Features
+## 2. Core Features [COMPLETED]
 
 - **File Selection**: Allow users to select single or multiple files for conversion using native file dialogs.
 - **Format Selection**: Provide dropdowns or selection widgets for choosing target formats based on file type, covering all major formats.
@@ -16,19 +16,19 @@ This document outlines a comprehensive plan to develop "libreconvert", a powerfu
 - **Configuration Options**: Include settings for specifying paths to FFmpeg and Pandoc binaries if they are not in standard locations.
 - **Batch Processing**: Support converting multiple files simultaneously, leveraging Dart's isolates for concurrency.
 
-## 3. Supported Formats
+## 3. Supported Formats [COMPLETED]
 
 - **Images**: PNG, JPG, BMP, GIF, WebP, HEIC (Apple's High Efficiency Image Container), TIFF, and other major formats supported by the 'image' package or FFmpeg if necessary.
 - **Audio & Video**: MP4, MKV, AVI, MOV, WMV, FLV, MP3, WAV, FLAC, OGG, AAC, M4A, and other formats supported by FFmpeg.
 - **Documents**: Markdown, HTML, PDF, DOCX, ODT, RTF, TXT, EPUB, and other formats supported by Pandoc.
 
-## 4. Advanced Features
+## 4. Advanced Features [COMPLETED]
 
 - **Manual File Saving**: Display a "Save" button for each completed conversion, allowing users to manually choose the save location for the converted file. Auto-saving will be disabled.
 - **Preview and Validation**: Where feasible, provide previews of converted files (e.g., thumbnails for images/videos) and validate output to ensure successful conversion.
 - **Logging and History**: Maintain a history of conversions with detailed logs for troubleshooting or re-running past conversions with the same settings.
 
-## 5. Technology Implementation
+## 5. Technology Implementation [COMPLETED]
 
 - **Flutter GUI**: Use Flutter's widget system to build a responsive interface with Material Design components for consistency across Windows, macOS, and Linux.
 - **File Handling**: Utilize Dart's `dart:io` library for reading/writing files and executing system commands to invoke FFmpeg and Pandoc.
@@ -37,7 +37,7 @@ This document outlines a comprehensive plan to develop "libreconvert", a powerfu
 - **Document Conversion**: Similarly, create a utility for Pandoc commands, supporting a wide range of document formats.
 - **Concurrency**: Use isolates to run conversion tasks in the background, keeping the UI responsive during processing.
 
-## 6. Project Structure
+## 6. Project Structure [COMPLETED]
 
 - **lib/**: Main source code directory.
   - **main.dart**: Entry point, setting up the app and desktop configurations.
@@ -47,7 +47,7 @@ This document outlines a comprehensive plan to develop "libreconvert", a powerfu
 - **assets/**: Store icons, images, or other static resources for the app UI.
 - **config/**: Store configuration files or user settings for binary paths and conversion presets.
 
-## 7. Development Steps
+## 7. Development Steps [COMPLETED]
 
 - **Step 1: Project Setup**: Ensure Flutter is configured for desktop support (already done for Linux, macOS, and Windows).
 - **Step 2: UI Development**: Build the main interface with file selection, format options, conversion controls, and advanced settings using Flutter widgets.
@@ -59,12 +59,12 @@ This document outlines a comprehensive plan to develop "libreconvert", a powerfu
 - **Step 7: Testing**: Test the app on different desktop platforms to ensure compatibility, focusing on file conversion accuracy (especially for HEIC and other major formats), UI responsiveness, and advanced feature functionality.
 - **Step 8: Packaging**: Prepare the app for distribution, creating executables for Windows, macOS, and Linux under the name "libreconvert".
 
-## 8. Additional Considerations
+## 8. Additional Considerations [COMPLETED]
 
 - **Security**: Implement input validation to sanitize file paths and command arguments to prevent command injection when calling FFmpeg and Pandoc, especially with custom command options.
 - **Error Handling**: Provide clear user feedback for conversion failures, including logs or messages indicating potential issues (e.g., missing binaries, unsupported formats).
 - **Performance**: Optimize file processing and system calls to handle large files or batch operations efficiently, with user controls for managing resource usage in advanced settings.
 
-## 9. Future Implementations
+## 9. Future Implementations [PENDING]
 
 - **PDF to Multiple Format Conversion**: Implement support for converting PDFs to various formats including Markdown, text, images, and other document formats using tools like `pdftotext` from the Poppler library for text extraction, `pdf-extract` for content extraction, or `ImageMagick` for conversion to image formats. This will involve checking for the availability of the chosen tool(s) on the user's system, extracting content or converting PDFs as needed, and formatting or saving the output in the desired format. If the necessary tools are not available, provide a fallback message suggesting manual conversion or installation of the required tools.
