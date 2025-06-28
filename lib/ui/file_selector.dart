@@ -200,7 +200,6 @@ class _FileSelectorState extends State<FileSelector> {
               dashPattern: [10, 5],
               strokeWidth: 2,
               radius: const Radius.circular(8),
-              padding: EdgeInsets.symmetric(horizontal: 8),
             ),
             child: SizedBox(
               height: 300,
@@ -368,7 +367,7 @@ class _FileSelectorState extends State<FileSelector> {
                     // This can be achieved by passing a callback or using a state management solution
                     // For now, we'll assume the parent listens to empty file selection to reset state
                   },
-                  child: const Text('Reset App'),
+                  child: const Text('Reset'),
                 ),
               ],
             ),

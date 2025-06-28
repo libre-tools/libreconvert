@@ -200,9 +200,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       trailing: PrimaryButton(
                         size: ButtonSize.small,
                         onPressed: () {
+                          final directoryPath = outputFile.substring(
+                            0,
+                            outputFile.lastIndexOf('/'),
+                          );
+                          Process.run('xdg-open', [directoryPath]).catchError((
+                            e,
+                          ) {
+                            logger.e('Error opening folder: $e');
+                            return ProcessResult(
+                              0,
+                              1,
+                              '',
+                              'Error opening folder: $e',
+                            );
+                          });
                           overlay.close();
                         },
-                        child: const Text('Dismiss'),
+                        child: const Text('Open'),
                       ),
                       trailingAlignment: Alignment.center,
                     ),
