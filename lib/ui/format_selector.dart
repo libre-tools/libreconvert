@@ -2,11 +2,13 @@ import 'package:shadcn_flutter/shadcn_flutter.dart';
 
 class FormatSelector extends StatefulWidget {
   final String fileType;
+  final String? sourceExtension;
   final Function(String?) onFormatSelected;
 
   const FormatSelector({
     super.key,
     required this.fileType,
+    this.sourceExtension,
     required this.onFormatSelected,
   });
 
@@ -72,12 +74,19 @@ class _FormatSelectorState extends State<FormatSelector> {
       popup: SelectPopup(
         items: SelectItemList(
           children:
-              supportedFormats[category]?.map((String format) {
-                return SelectItemButton(
-                  value: format.toUpperCase(),
-                  child: Text(format),
-                );
-              }).toList() ??
+              supportedFormats[category]
+                  ?.where((format) {
+                    return widget.sourceExtension == null ||
+                        format.toLowerCase() !=
+                            widget.sourceExtension!.toLowerCase();
+                  })
+                  .map((String format) {
+                    return SelectItemButton(
+                      value: format.toUpperCase(),
+                      child: Text(format),
+                    );
+                  })
+                  .toList() ??
               [],
         ),
       ).call,

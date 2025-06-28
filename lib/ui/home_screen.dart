@@ -178,7 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     for (var task in completedTasks) {
       final fileName =
-          '${task.filePath.split('/').last.split('.').first}_converted.${task.targetFormat.toLowerCase()}';
+          '${task.filePath.split('/').last.split('.').first}_converted.${task.targetFormat.toLowerCase() == "markdown" ? "md" : task.targetFormat.toLowerCase()}';
       String? outputFile = await FilePicker.platform.saveFile(
         dialogTitle: 'Save $fileName',
         fileName: fileName,
@@ -307,6 +307,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             padding: const EdgeInsets.all(12.0),
                             child: FormatSelector(
                               fileType: currentFileType,
+                              sourceExtension: selectedFiles.isNotEmpty
+                                  ? selectedFiles[0]
+                                        .split('.')
+                                        .last
+                                        .toLowerCase()
+                                  : null,
                               onFormatSelected: _updateSelectedFormat,
                             ),
                           ),
@@ -326,7 +332,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 30),
+                  gap(30),
                   FileSelector(
                     onFilesSelected: _updateSelectedFiles,
                     conversionTasks: conversionTasks,

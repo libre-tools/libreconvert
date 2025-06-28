@@ -21,7 +21,7 @@ class FileSelector extends StatefulWidget {
 
 class _FileSelectorState extends State<FileSelector> {
   List<String> selectedFiles = [];
-  String? currentFileCategory;
+  String? currentFileExtension;
 
   @override
   void didUpdateWidget(covariant FileSelector oldWidget) {
@@ -53,7 +53,7 @@ class _FileSelectorState extends State<FileSelector> {
       final extensions = paths
           .map((path) => path.split('.').last.toLowerCase())
           .toList();
-      if (_checkFileCategoryConsistency(extensions)) {
+      if (_checkFileExtensionConsistency(extensions)) {
         setState(() {
           selectedFiles.addAll(paths);
           widget.onFilesSelected(selectedFiles, extensions);
@@ -67,20 +67,20 @@ class _FileSelectorState extends State<FileSelector> {
                 child: Basic(
                   title: const Text('Invalid Selection'),
                   subtitle: const Text(
-                    'Mixed file categories are not allowed. Please select files from the same category (e.g., only images, only videos).',
+                    'Please select files of the same format.',
                   ),
                   trailing: PrimaryButton(
                     size: ButtonSize.small,
                     onPressed: () {
                       overlay.close();
                     },
-                    child: const Text('Dismiss'),
+                    child: const Text('OK'),
                   ),
                   trailingAlignment: Alignment.center,
                 ),
               );
             },
-            location: ToastLocation.bottomCenter,
+            location: ToastLocation.bottomRight,
           );
         }
       }
@@ -95,54 +95,23 @@ class _FileSelectorState extends State<FileSelector> {
           .toList();
       widget.onFilesSelected(selectedFiles, extensions);
       if (selectedFiles.isEmpty) {
-        currentFileCategory = null;
+        currentFileExtension = null;
       }
     });
   }
 
-  bool _checkFileCategoryConsistency(List<String> extensions) {
+  bool _checkFileExtensionConsistency(List<String> extensions) {
     if (extensions.isEmpty) return true;
-    if (currentFileCategory == null && selectedFiles.isEmpty) {
-      currentFileCategory = _getFileCategory(extensions[0]);
+    if (currentFileExtension == null && selectedFiles.isEmpty) {
+      currentFileExtension = extensions[0];
     }
-    final expectedCategory =
-        currentFileCategory ?? _getFileCategory(extensions[0]);
+    final expectedExtension = currentFileExtension ?? extensions[0];
     for (final ext in extensions) {
-      final category = _getFileCategory(ext);
-      if (category != expectedCategory) {
+      if (ext != expectedExtension) {
         return false;
       }
     }
     return true;
-  }
-
-  String _getFileCategory(String extension) {
-    if (['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'].contains(extension)) {
-      return 'image';
-    } else if ([
-      'mp3',
-      'wav',
-      'flac',
-      'ogg',
-      'aac',
-      'm4a',
-    ].contains(extension)) {
-      return 'audio';
-    } else if (['mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv'].contains(extension)) {
-      return 'video';
-    } else if ([
-      'pdf',
-      'docx',
-      'odt',
-      'rtf',
-      'txt',
-      'html',
-      'md',
-      'epub',
-    ].contains(extension)) {
-      return 'document';
-    }
-    return 'other';
   }
 
   @override
@@ -157,9 +126,9 @@ class _FileSelectorState extends State<FileSelector> {
               final extensions = paths
                   .map((path) => path.split('.').last.toLowerCase())
                   .toList();
-              if (_checkFileCategoryConsistency(extensions)) {
+              if (_checkFileExtensionConsistency(extensions)) {
                 setState(() {
-                  selectedFiles = paths;
+                  selectedFiles.addAll(paths);
                   widget.onFilesSelected(selectedFiles, extensions);
                 });
               } else {
@@ -171,20 +140,20 @@ class _FileSelectorState extends State<FileSelector> {
                         child: Basic(
                           title: const Text('Invalid Drop'),
                           subtitle: const Text(
-                            'Mixed file categories are not allowed. Please drop files from the same category (e.g., only images, only videos).',
+                            'Please drop files of the same format.',
                           ),
                           trailing: PrimaryButton(
                             size: ButtonSize.small,
                             onPressed: () {
                               overlay.close();
                             },
-                            child: const Text('Dismiss'),
+                            child: const Text('OK'),
                           ),
                           trailingAlignment: Alignment.center,
                         ),
                       );
                     },
-                    location: ToastLocation.bottomLeft,
+                    location: ToastLocation.bottomRight,
                   );
                 }
               }
@@ -204,13 +173,14 @@ class _FileSelectorState extends State<FileSelector> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: SizedBox(
-                      height: 250,
+                      height: 300,
                       width: double.infinity,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.cloud_upload, size: 40),
+                            Icon(Icons.cloud_upload_outlined, size: 40),
+                            gap(10),
                             Text(
                               "Drag and drop files here, or click to select files",
                               textAlign: TextAlign.center,
@@ -230,10 +200,10 @@ class _FileSelectorState extends State<FileSelector> {
               dashPattern: [10, 5],
               strokeWidth: 2,
               radius: const Radius.circular(8),
-              padding: EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 8),
             ),
             child: SizedBox(
-              height: 250,
+              height: 300,
               width: double.infinity,
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -300,6 +270,7 @@ class _FileSelectorState extends State<FileSelector> {
 
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Stack(
                         alignment: Alignment.topRight,
@@ -312,13 +283,8 @@ class _FileSelectorState extends State<FileSelector> {
                                 Center(
                                   child: Icon(
                                     previewIcon,
-                                    size: 50,
-                                    color: const Color.fromRGBO(
-                                      107,
-                                      114,
-                                      128,
-                                      1,
-                                    ),
+                                    size: 75,
+                                    color: Colors.gray,
                                   ),
                                 ),
                                 if (task.filePath.isNotEmpty)
@@ -359,7 +325,7 @@ class _FileSelectorState extends State<FileSelector> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      Gap(2),
                       Text(
                         fileName,
                         style: const TextStyle(
@@ -395,7 +361,7 @@ class _FileSelectorState extends State<FileSelector> {
                   onPressed: () async {
                     setState(() {
                       selectedFiles.clear();
-                      currentFileCategory = null;
+                      currentFileExtension = null;
                       widget.onFilesSelected([], []);
                     });
                     // Reset app state by notifying parent to clear conversion tasks
