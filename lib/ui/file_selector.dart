@@ -40,8 +40,8 @@ class _FileSelectorState extends State<FileSelector> {
         'mp3', 'wav', 'flac', 'ogg', 'aac', 'm4a',
         // Video
         'mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv',
-        // Documents
-        'pdf', 'docx', 'odt', 'rtf', 'txt', 'html', 'md', 'epub',
+        // Documents (excluding PDF)
+        'docx', 'odt', 'rtf', 'txt', 'html', 'md', 'epub',
       ],
     );
 
@@ -53,7 +53,33 @@ class _FileSelectorState extends State<FileSelector> {
       final extensions = paths
           .map((path) => path.split('.').last.toLowerCase())
           .toList();
-      if (_checkFileExtensionConsistency(extensions)) {
+      final pdfPaths = paths
+          .where((path) => path.toLowerCase().endsWith('.pdf'))
+          .toList();
+      if (pdfPaths.isNotEmpty) {
+        if (mounted) {
+          showToast(
+            context: context,
+            builder: (context, overlay) {
+              return SurfaceCard(
+                child: Basic(
+                  title: const Text('PDF Not Supported'),
+                  subtitle: const Text('PDF conversion is not supported yet.'),
+                  trailing: PrimaryButton(
+                    size: ButtonSize.small,
+                    onPressed: () {
+                      overlay.close();
+                    },
+                    child: const Text('OK'),
+                  ),
+                  trailingAlignment: Alignment.center,
+                ),
+              );
+            },
+            location: ToastLocation.bottomRight,
+          );
+        }
+      } else if (_checkFileExtensionConsistency(extensions)) {
         setState(() {
           selectedFiles.addAll(paths);
           widget.onFilesSelected(selectedFiles, extensions);
@@ -67,7 +93,7 @@ class _FileSelectorState extends State<FileSelector> {
                 child: Basic(
                   title: const Text('Invalid Selection'),
                   subtitle: const Text(
-                    'Please select files of the same format.',
+                    'Mixed file formats are not allowed. Please select files with the same format (e.g., only .txt or only .md).',
                   ),
                   trailing: PrimaryButton(
                     size: ButtonSize.small,
@@ -126,9 +152,37 @@ class _FileSelectorState extends State<FileSelector> {
               final extensions = paths
                   .map((path) => path.split('.').last.toLowerCase())
                   .toList();
-              if (_checkFileExtensionConsistency(extensions)) {
+              final pdfPaths = paths
+                  .where((path) => path.toLowerCase().endsWith('.pdf'))
+                  .toList();
+              if (pdfPaths.isNotEmpty) {
+                if (mounted) {
+                  showToast(
+                    context: context,
+                    builder: (context, overlay) {
+                      return SurfaceCard(
+                        child: Basic(
+                          title: const Text('PDF Not Supported'),
+                          subtitle: const Text(
+                            'PDF conversion is not supported yet.',
+                          ),
+                          trailing: PrimaryButton(
+                            size: ButtonSize.small,
+                            onPressed: () {
+                              overlay.close();
+                            },
+                            child: const Text('OK'),
+                          ),
+                          trailingAlignment: Alignment.center,
+                        ),
+                      );
+                    },
+                    location: ToastLocation.bottomRight,
+                  );
+                }
+              } else if (_checkFileExtensionConsistency(extensions)) {
                 setState(() {
-                  selectedFiles.addAll(paths);
+                  selectedFiles = paths;
                   widget.onFilesSelected(selectedFiles, extensions);
                 });
               } else {
@@ -140,7 +194,7 @@ class _FileSelectorState extends State<FileSelector> {
                         child: Basic(
                           title: const Text('Invalid Drop'),
                           subtitle: const Text(
-                            'Please drop files of the same format.',
+                            'Mixed file formats are not allowed. Please drop files with the same format (e.g., only .txt or only .md).',
                           ),
                           trailing: PrimaryButton(
                             size: ButtonSize.small,
