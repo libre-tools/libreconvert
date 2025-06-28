@@ -218,6 +218,7 @@ class _FileSelectorState extends State<FileSelector> {
                 cursor: SystemMouseCursors.click,
                 child: DottedBorder(
                   options: RoundedRectDottedBorderOptions(
+                    color: Theme.of(context).colorScheme.accentForeground,
                     dashPattern: [10, 5],
                     strokeWidth: 2,
                     radius: const Radius.circular(8),
@@ -251,9 +252,11 @@ class _FileSelectorState extends State<FileSelector> {
         else
           DottedBorder(
             options: RoundedRectDottedBorderOptions(
+              color: Theme.of(context).colorScheme.accentForeground,
               dashPattern: [10, 5],
               strokeWidth: 2,
               radius: const Radius.circular(8),
+              padding: EdgeInsets.symmetric(horizontal: 8),
             ),
             child: SizedBox(
               height: 300,
@@ -336,7 +339,7 @@ class _FileSelectorState extends State<FileSelector> {
                                 Center(
                                   child: Icon(
                                     previewIcon,
-                                    size: 75,
+                                    size: 70,
                                     color: Colors.gray,
                                   ),
                                 ),
@@ -346,20 +349,20 @@ class _FileSelectorState extends State<FileSelector> {
                                       borderRadius: BorderRadius.circular(8),
                                       child: Container(
                                         color: Colors.black.withValues(
-                                          alpha: 0.3,
+                                          alpha: 0.5,
                                         ),
                                         child: Center(
                                           child: task.status == 'Completed'
                                               ? const Icon(
-                                                  Icons.check,
+                                                  Icons.check_circle_outline,
                                                   color: Colors.green,
-                                                  size: 40,
+                                                  size: 32,
                                                 )
                                               : task.status == 'Failed'
                                               ? const Icon(
                                                   Icons.error,
                                                   color: Colors.red,
-                                                  size: 40,
+                                                  size: 32,
                                                 )
                                               : const CircularProgressIndicator(),
                                         ),
@@ -378,7 +381,6 @@ class _FileSelectorState extends State<FileSelector> {
                           ),
                         ],
                       ),
-                      Gap(2),
                       Text(
                         fileName,
                         style: const TextStyle(
@@ -388,6 +390,7 @@ class _FileSelectorState extends State<FileSelector> {
                         ),
                         textAlign: TextAlign.center,
                         maxLines: 1,
+                        softWrap: true,
                       ),
                     ],
                   );

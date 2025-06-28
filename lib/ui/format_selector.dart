@@ -76,9 +76,14 @@ class _FormatSelectorState extends State<FormatSelector> {
           children:
               supportedFormats[category]
                   ?.where((format) {
-                    return widget.sourceExtension == null ||
-                        format.toLowerCase() !=
-                            widget.sourceExtension!.toLowerCase();
+                    if (widget.sourceExtension == null) return true;
+                    String sourceExt = widget.sourceExtension!.toLowerCase();
+                    String formatLower = format.toLowerCase();
+                    // Handle special case for Markdown
+                    if (sourceExt == 'md' || sourceExt == 'markdown') {
+                      return formatLower != 'markdown';
+                    }
+                    return formatLower != sourceExt;
                   })
                   .map((String format) {
                     return SelectItemButton(
