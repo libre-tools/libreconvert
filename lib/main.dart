@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return shadcn.ShadcnApp(
       title: 'LibreConvert',
       theme: shadcn.ThemeData(
-        colorScheme: shadcn.ColorSchemes.lightNeutral(),
+        colorScheme: shadcn.ColorSchemes.lightBlue(),
         radius: 0.5,
       ),
       debugShowCheckedModeBanner: false,

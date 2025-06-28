@@ -309,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   HeaderWidget(
-                    title: 'Welcome to libreconvert',
+                    title: 'Welcome to LibreConvert',
                     subtitle: 'Select files to convert with ease.',
                     actions: [
                       if (selectedFiles.isNotEmpty)
