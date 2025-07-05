@@ -98,7 +98,21 @@ jobs:
         echo " libgdk-pixbuf2.0-0," >> deb_package/DEBIAN/control
         echo " libatk-bridge2.0-0," >> deb_package/DEBIAN/control
         echo " libsoup2.4-1," >> deb_package/DEBIAN/control
-        echo " libwebkit2gtk-4.0-37" >> deb_package/DEBIAN/control
+        echo " libwebkit2gtk-4.0-37," >> deb_package/DEBIAN/control
+        echo " libx11-6," >> deb_package/DEBIAN/control
+        echo " libxext6," >> deb_package/DEBIAN/control
+        echo " libxrender1," >> deb_package/DEBIAN/control
+        echo " libxtst6," >> deb_package/DEBIAN/control
+        echo " libxcursor1," >> deb_package/DEBIAN/control
+        echo " libxinerama1," >> deb_package/DEBIAN/control
+        echo " libxi6," >> deb_package/DEBIAN/control
+        echo " libxrandr2," >> deb_package/DEBIAN/control
+        echo " libxcomposite1," >> deb_package/DEBIAN/control
+        echo " libxdamage1," >> deb_package/DEBIAN/control
+        echo " libxkbcommon0," >> deb_package/DEBIAN/control
+        echo " libwayland-client0," >> deb_package/DEBIAN/control
+        echo " libwayland-cursor0," >> deb_package/DEBIAN/control
+        echo " libwayland-egl1" >> deb_package/DEBIAN/control
         echo "Description: A file conversion tool built with Flutter." >> deb_package/DEBIAN/control
         echo " This application allows you to convert various file formats." >> deb_package/DEBIAN/control
 
