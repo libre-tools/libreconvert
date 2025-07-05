@@ -34,7 +34,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pub-cache-
 
-    - name: Install RPM build dependencies
+    - name: Remove conflicting CMake
+      run: |
+        sudo rm -rf /usr/local/bin/cmake
+        sudo rm -rf /usr/local/share/cmake-3.31
+
+    - name: Install Linux build dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
@@ -137,7 +142,8 @@ jobs:
           dpkg-dev \
           fakeroot \
           libgtk-3-dev \
-          pkg-config
+          pkg-config \
+          desktop-file-utils
 
     - name: Create .desktop file
       run: |
