@@ -38,6 +38,8 @@ jobs:
       run: |
         sudo rm -rf /usr/local/bin/cmake
         sudo rm -rf /usr/local/share/cmake-3.31
+        sudo apt-get update
+        sudo apt-get install -y cmake
 
     - name: Install Linux build dependencies
       run: |
