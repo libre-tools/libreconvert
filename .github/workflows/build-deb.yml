@@ -66,7 +66,7 @@ jobs:
         echo "Name=LibreConvert" >> libreconvert.desktop
         echo "GenericName=File Converter" >> libreconvert.desktop
         echo "Comment=A file conversion tool built with Flutter." >> libreconvert.desktop
-        echo "Exec=/usr/bin/libreconvert/libreconvert" >> libreconvert.desktop
+        echo "Exec=libreconvert" >> libreconvert.desktop
         echo "Icon=/usr/share/icons/hicolor/scalable/apps/libreconvert.png" >> libreconvert.desktop
         echo "Terminal=false" >> libreconvert.desktop
         echo "Type=Application" >> libreconvert.desktop
@@ -76,6 +76,7 @@ jobs:
     - name: Setup DEB package structure
       run: |
         mkdir -p deb_package/DEBIAN
+        mkdir -p deb_package/opt/libreconvert
         mkdir -p deb_package/usr/bin
         mkdir -p deb_package/usr/share/applications
         mkdir -p deb_package/usr/share/icons/hicolor/scalable/apps
@@ -95,7 +96,8 @@ jobs:
 
     - name: Copy files into package
       run: |
-        cp -r build/linux/x64/release/bundle deb_package/usr/bin/libreconvert
+        cp -r build/linux/x64/release/bundle/* deb_package/opt/libreconvert/
+        ln -s /opt/libreconvert/libreconvert deb_package/usr/bin/libreconvert
         cp libreconvert.desktop deb_package/usr/share/applications/
         cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
 
