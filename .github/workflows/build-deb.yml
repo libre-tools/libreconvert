@@ -67,7 +67,7 @@ jobs:
         echo "GenericName=File Converter" >> libreconvert.desktop
         echo "Comment=A file conversion tool built with Flutter." >> libreconvert.desktop
         echo "Exec=/opt/libreconvert/libreconvert" >> libreconvert.desktop
-        echo "Icon=/usr/share/icons/hicolor/scalable/apps/libreconvert.png" >> libreconvert.desktop
+        echo "Icon=libreconvert" >> libreconvert.desktop
         echo "Terminal=false" >> libreconvert.desktop
         echo "Type=Application" >> libreconvert.desktop
         echo "Categories=Utility;" >> libreconvert.desktop
@@ -101,6 +101,7 @@ jobs:
       run: |
         cp libreconvert.desktop deb_package/usr/share/applications/
         cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
+        chmod 755 deb_package/opt/libreconvert/libreconvert
 
     - name: Debugging: Check executable permissions and desktop file
       run: |
