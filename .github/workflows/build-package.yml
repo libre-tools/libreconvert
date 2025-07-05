@@ -24,7 +24,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable' # Using stable channel for dynamic versioning
+        channel: 'stable'
 
     - name: Cache Flutter dependencies
       uses: actions/cache@v3
@@ -37,10 +37,28 @@ jobs:
     - name: Install RPM build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y rpm patchelf libgtk-3-dev libgtk-3-0 pkg-config desktop-file-utils clang cmake ninja-build
-    - name: Create rpmbuild directory structure before copying spec
+        sudo apt-get install -y \
+          build-essential \
+          clang \
+          cmake \
+          ninja-build \
+          pkg-config \
+          libgtk-3-dev \
+          libblkid-dev \
+          liblzma-dev \
+          liblz4-dev \
+          libzstd-dev \
+          desktop-file-utils \
+          rpm \
+          patchelf
+
+    - name: Fix PKG_CONFIG_PATH
+      run: echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> $GITHUB_ENV
+
+    - name: Create rpmbuild directory structure
       run: mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-    - name: Ensure libreconvert.spec is in place
+
+    - name: Copy RPM spec file
       run: |
         if [ -f "libreconvert.spec" ]; then
           cp libreconvert.spec rpmbuild/SPECS/
@@ -54,25 +72,25 @@ jobs:
 
     - name: Create source tarball
       run: |
-        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
+        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
         mkdir -p rpm_source/libreconvert-${VERSION}
         cp -r build/linux/x64/release/bundle/* rpm_source/libreconvert-${VERSION}/
         tar -czvf libreconvert-${VERSION}-bin.tar.gz -C rpm_source libreconvert-${VERSION}
 
-    - name: Move source tarball
+    - name: Move tarball to SOURCES
       run: |
-        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
+        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
         mv libreconvert-${VERSION}-bin.tar.gz rpmbuild/SOURCES/
 
     - name: Build RPM
       run: rpmbuild -ba --define '_topdir ${{ github.workspace }}/rpmbuild' rpmbuild/SPECS/libreconvert.spec
 
-    - name: Extract version from pubspec.yaml
+    - name: Extract version
       run: |
-        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
+        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Upload RPM artifacts
+    - name: Upload RPM artifact
       uses: actions/upload-artifact@v4
       with:
         name: libreconvert-rpm-${{ env.VERSION }}-${{ github.sha }}
@@ -96,7 +114,7 @@ jobs:
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable' # Using stable channel for dynamic versioning
+        channel: 'stable'
 
     - name: Cache Flutter dependencies
       uses: actions/cache@v3
@@ -109,13 +127,17 @@ jobs:
     - name: Get Flutter dependencies
       run: flutter pub get
 
-    - name: Build Linux application
+    - name: Build Linux release
       run: flutter build linux --release
 
-    - name: Install DEB build dependencies
+    - name: Install DEB dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y dpkg-dev fakeroot libgtk-3-dev pkg-config
+        sudo apt-get install -y \
+          dpkg-dev \
+          fakeroot \
+          libgtk-3-dev \
+          pkg-config
 
     - name: Create .desktop file
       run: |
@@ -130,7 +152,7 @@ jobs:
         echo "Categories=Utility;" >> libreconvert.desktop
         echo "StartupWMClass=dev.libretools.convert.libreconvert" >> libreconvert.desktop
 
-    - name: Prepare Debian package structure
+    - name: Setup DEB package structure
       run: |
         mkdir -p deb_package/DEBIAN
         mkdir -p deb_package/usr/bin
@@ -139,7 +161,7 @@ jobs:
 
     - name: Create DEBIAN/control file
       run: |
-        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
+        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
         echo "Package: libreconvert" > deb_package/DEBIAN/control
         echo "Version: $VERSION" >> deb_package/DEBIAN/control
         echo "Section: x11" >> deb_package/DEBIAN/control
@@ -150,21 +172,21 @@ jobs:
         echo "Description: A file conversion tool built with Flutter." >> deb_package/DEBIAN/control
         echo " This application allows you to convert various file formats." >> deb_package/DEBIAN/control
 
-    - name: Copy built application and assets
+    - name: Copy files into package
       run: |
         cp -r build/linux/x64/release/bundle deb_package/usr/bin/libreconvert
         cp libreconvert.desktop deb_package/usr/share/applications/
         cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
 
-    - name: Build .deb package
+    - name: Build DEB package
       run: dpkg-deb --build deb_package
 
-    - name: Extract version from pubspec.yaml
+    - name: Extract version
       run: |
-        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
+        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
         echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-    - name: Upload .deb artifact
+    - name: Upload DEB artifact
       uses: actions/upload-artifact@v4
       with:
         name: libreconvert-deb-${{ env.VERSION }}-${{ github.sha }}
