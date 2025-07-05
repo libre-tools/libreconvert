@@ -13,6 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Remove conflicting CMake (if any)
+      run: |
+        sudo rm -rf /usr/local/bin/cmake
+        sudo rm -rf /usr/local/share/cmake-3.31
+        which cmake || true
+        cmake --version || true
+
     - name: Cache Flutter SDK
       uses: actions/cache@v3
       with:
