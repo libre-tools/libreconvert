@@ -128,3 +128,8 @@ jobs:
       with:
         name: libreconvert-deb-$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)-${{ github.sha }}
         path: deb_package.deb
+    - name: Upload DEB artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: libreconvert-deb-${{ env.VERSION }}-${{ github.sha }}
+        path: deb_package.deb
