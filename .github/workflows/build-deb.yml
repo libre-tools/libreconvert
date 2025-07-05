@@ -47,9 +47,6 @@ jobs:
     - name: Get Flutter dependencies
       run: flutter pub get
 
-    - name: Build Linux release
-      run: flutter build linux --release
-
     - name: Install DEB dependencies
       run: |
         sudo apt-get update
@@ -59,6 +56,9 @@ jobs:
           libgtk-3-dev \
           pkg-config \
           desktop-file-utils
+
+    - name: Build Linux release
+      run: flutter build linux --release
 
     - name: Create .desktop file
       run: |
