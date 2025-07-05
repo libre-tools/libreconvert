@@ -101,6 +101,17 @@ jobs:
         cp libreconvert.desktop deb_package/usr/share/applications/
         cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
 
+    - name: Debugging: List package contents
+      run: |
+        echo "Contents of deb_package/usr/bin:"
+        ls -l deb_package/usr/bin/
+        echo "Contents of deb_package/opt/libreconvert:"
+        ls -l deb_package/opt/libreconvert/
+        echo "Content of libreconvert.desktop:"
+        cat libreconvert.desktop
+        echo "Permissions of deb_package/opt/libreconvert/libreconvert:"
+        ls -l deb_package/opt/libreconvert/libreconvert
+
     - name: Build DEB package
       run: dpkg-deb --build deb_package
 
