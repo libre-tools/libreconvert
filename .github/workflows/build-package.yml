@@ -40,10 +40,10 @@ jobs:
         sudo apt-get install -y rpm patchelf libgtk-3-dev
     - name: Ensure libreconvert.spec is in place
       run: |
-        if [ -f "rpmbuild/SPECS/libreconvert.spec" ]; then
-          cp rpmbuild/SPECS/libreconvert.spec libreconvert.spec
+        if [ -f "libreconvert.spec" ]; then
+          cp libreconvert.spec rpmbuild/SPECS/
         else
-          echo "Error: libreconvert.spec not found in rpmbuild/SPECS/"
+          echo "Error: libreconvert.spec not found in root directory"
           exit 1
         fi
 
@@ -60,14 +60,10 @@ jobs:
         cp -r build/linux/x64/release/bundle/* rpm_source/libreconvert-${VERSION}/
         tar -czvf libreconvert-${VERSION}-bin.tar.gz -C rpm_source libreconvert-${VERSION}
 
-    - name: Move spec file and source tarball
+    - name: Move source tarball
       run: |
         VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
         mv libreconvert-${VERSION}-bin.tar.gz rpmbuild/SOURCES/
-        # Ensure spec file is in the correct location
-        if [ -f "libreconvert.spec" ]; then
-          mv libreconvert.spec rpmbuild/SPECS/
-        fi
 
     - name: Build RPM
       run: rpmbuild -ba --define '_topdir ${{ github.workspace }}/rpmbuild' rpmbuild/SPECS/libreconvert.spec
