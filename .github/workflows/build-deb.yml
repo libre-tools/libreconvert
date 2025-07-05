@@ -94,23 +94,14 @@ jobs:
         echo "Description: A file conversion tool built with Flutter." >> deb_package/DEBIAN/control
         echo " This application allows you to convert various file formats." >> deb_package/DEBIAN/control
 
-    - name: Copy files into package
-      run: |
-        cp -r build/linux/x64/release/bundle/* deb_package/opt/libreconvert/
-        ln -s /opt/libreconvert/libreconvert deb_package/usr/bin/libreconvert
-        cp libreconvert.desktop deb_package/usr/share/applications/
-        cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
+    - name: Copy application bundle
+      run: cp -r build/linux/x64/release/bundle/* deb_package/opt/libreconvert/
 
-    - name: Debugging: List package contents and permissions
-      run: |
-        echo "Contents of deb_package/usr/bin:"
-        ls -l deb_package/usr/bin/
-        echo "Contents of deb_package/opt/libreconvert:"
-        ls -l deb_package/opt/libreconvert/
-        echo "Content of libreconvert.desktop:"
-        cat libreconvert.desktop
-        echo "Permissions of deb_package/opt/libreconvert/libreconvert:"
-        ls -l deb_package/opt/libreconvert/libreconvert
+    - name: Copy desktop file
+      run: cp libreconvert.desktop deb_package/usr/share/applications/
+
+    - name: Copy icon file
+      run: cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
 
     - name: Build DEB package
       run: dpkg-deb --build deb_package
