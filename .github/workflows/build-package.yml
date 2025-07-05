@@ -38,6 +38,14 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y rpm patchelf libgtk-3-dev
+    - name: Ensure libreconvert.spec is in place
+      run: |
+        if [ -f "rpmbuild/SPECS/libreconvert.spec" ]; then
+          cp rpmbuild/SPECS/libreconvert.spec libreconvert.spec
+        else
+          echo "Error: libreconvert.spec not found in rpmbuild/SPECS/"
+          exit 1
+        fi
 
     - name: Build Flutter Linux release
       run: flutter build linux --release
@@ -55,8 +63,11 @@ jobs:
     - name: Move spec file and source tarball
       run: |
         VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
-        mv libreconvert.spec rpmbuild/SPECS/
         mv libreconvert-${VERSION}-bin.tar.gz rpmbuild/SOURCES/
+        # Ensure spec file is in the correct location
+        if [ -f "libreconvert.spec" ]; then
+          mv libreconvert.spec rpmbuild/SPECS/
+        fi
 
     - name: Build RPM
       run: rpmbuild -ba --define '_topdir ${{ github.workspace }}/rpmbuild' rpmbuild/SPECS/libreconvert.spec
@@ -109,7 +120,7 @@ jobs:
     - name: Install DEB build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y dpkg-dev fakeroot libgtk-3-dev
+        sudo apt-get install -y dpkg-dev fakeroot libgtk-3-dev pkg-config
 
     - name: Create .desktop file
       run: |
