@@ -66,7 +66,7 @@ jobs:
         echo "Name=LibreConvert" >> libreconvert.desktop
         echo "GenericName=File Converter" >> libreconvert.desktop
         echo "Comment=A file conversion tool built with Flutter." >> libreconvert.desktop
-        echo "Exec=/opt/libreconvert/libreconvert" >> libreconvert.desktop
+        echo "Exec=libreconvert" >> libreconvert.desktop
         echo "Icon=libreconvert" >> libreconvert.desktop
         echo "Terminal=false" >> libreconvert.desktop
         echo "Type=Application" >> libreconvert.desktop
@@ -110,6 +110,9 @@ jobs:
         cp libreconvert.desktop deb_package/usr/share/applications/
         cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
         chmod 755 deb_package/opt/libreconvert/libreconvert
+        # Create a symlink in /usr/bin for easier access
+        mkdir -p deb_package/usr/bin
+        ln -sf /opt/libreconvert/libreconvert deb_package/usr/bin/libreconvert
 
     - name: Debug executable permissions and desktop file
       run: |
