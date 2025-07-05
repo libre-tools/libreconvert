@@ -43,14 +43,18 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Build artifacts for RPM and DEB
+rpmbuild/
+rpm_source/
+libreconvert-1.0.0-bin.tar.gz
+deb_package/
+
+# Other temporary/generated files
 plan.md
 revised_plan.md
 libreconvert-1.0.0.tar.gz
 libreconvert-1.0.0/
-libreconvert.spec
-plan.md
-plan.md
-plan.md
 libreconvert.deb
 PKGBUILD
 instructions.md

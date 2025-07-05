@@ -1,0 +1,115 @@
+name: Build RPM and DEB
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-rpm:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.x' # Use a specific Flutter version or 'stable'
+
+    - name: Install RPM build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y rpm patchelf
+
+    - name: Build Flutter Linux release
+      run: flutter build linux --release
+
+    - name: Create rpmbuild directory structure
+      run: mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+
+    - name: Create source tarball
+      run: |
+        mkdir -p rpm_source/libreconvert-1.0.0
+        cp -r build/linux/x64/release/bundle/* rpm_source/libreconvert-1.0.0/
+        tar -czvf libreconvert-1.0.0-bin.tar.gz -C rpm_source libreconvert-1.0.0
+
+    - name: Move spec file and source tarball
+      run: |
+        mv libreconvert.spec rpmbuild/SPECS/
+        mv libreconvert-1.0.0-bin.tar.gz rpmbuild/SOURCES/
+
+    - name: Build RPM
+      run: rpmbuild -ba --define '_topdir ${{ github.workspace }}/rpmbuild' rpmbuild/SPECS/libreconvert.spec
+
+    - name: Upload RPM artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: libreconvert-rpm
+        path: rpmbuild/RPMS/x86_64/*.rpm
+
+  build-deb:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    - name: Get Flutter dependencies
+      run: flutter pub get
+
+    - name: Build Linux application
+      run: flutter build linux --release
+
+    - name: Create .desktop file
+      run: |
+        echo "[Desktop Entry]" > libreconvert.desktop
+        echo "Name=LibreConvert" >> libreconvert.desktop
+        echo "GenericName=File Converter" >> libreconvert.desktop
+        echo "Comment=A file conversion tool built with Flutter." >> libreconvert.desktop
+        echo "Exec=/usr/bin/libreconvert/libreconvert" >> libreconvert.desktop
+        echo "Icon=/usr/share/icons/hicolor/scalable/apps/libreconvert.png" >> libreconvert.desktop
+        echo "Terminal=false" >> libreconvert.desktop
+        echo "Type=Application" >> libreconvert.desktop
+        echo "Categories=Utility;" >> libreconvert.desktop
+        echo "StartupWMClass=dev.libretools.convert.libreconvert" >> libreconvert.desktop
+
+    - name: Prepare Debian package structure
+      run: |
+        mkdir -p deb_package/DEBIAN
+        mkdir -p deb_package/usr/bin
+        mkdir -p deb_package/usr/share/applications
+        mkdir -p deb_package/usr/share/icons/hicolor/scalable/apps
+
+    - name: Create DEBIAN/control file
+      run: |
+        echo "Package: libreconvert" > deb_package/DEBIAN/control
+        echo "Version: 1.0.0" >> deb_package/DEBIAN/control
+        echo "Section: x11" >> deb_package/DEBIAN/control
+        echo "Priority: optional" >> deb_package/DEBIAN/control
+        echo "Architecture: amd64" >> deb_package/DEBIAN/control
+        echo "Maintainer: Raja <libretools@protonmail.com>" >> deb_package/DEBIAN/control
+        echo "Depends: libgtk-3-0, libappindicator3-1, libjson-glib-1.0-0, libsecret-1-0, libglib2.0-0, libgdk-pixbuf2.0-0, libatk-bridge2.0-0, libsoup2.4-1, libwebkit2gtk-4.0-37" >> deb_package/DEBIAN/control
+        echo "Description: A file conversion tool built with Flutter." >> deb_package/DEBIAN/control
+        echo " This application allows you to convert various file formats." >> deb_package/DEBIAN/control
+
+    - name: Copy built application and assets
+      run: |
+        cp -r build/linux/x64/release/bundle deb_package/usr/bin/libreconvert
+        cp libreconvert.desktop deb_package/usr/share/applications/
+        cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
+
+    - name: Build .deb package
+      run: dpkg-deb --build deb_package
+
+    - name: Upload .deb artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: libreconvert-deb
+        path: deb_package.deb
