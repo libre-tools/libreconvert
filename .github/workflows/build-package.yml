@@ -21,7 +21,7 @@ jobs:
     - name: Install RPM build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y rpm patchelf
+        sudo apt-get install -y rpm patchelf libgtk-3-dev
 
     - name: Build Flutter Linux release
       run: flutter build linux --release
@@ -66,6 +66,11 @@ jobs:
 
     - name: Build Linux application
       run: flutter build linux --release
+
+    - name: Install DEB build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y dpkg-dev fakeroot libgtk-3-dev
 
     - name: Create .desktop file
       run: |
