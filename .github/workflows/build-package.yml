@@ -13,10 +13,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Cache Flutter SDK
+      uses: actions/cache@v3
+      with:
+        path: ${{ runner.tool_cache }}/flutter
+        key: ${{ runner.os }}-flutter-3.22.2
+        restore-keys: |
+          ${{ runner.os }}-flutter-
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.x' # Use a specific Flutter version or 'stable'
+        flutter-version: '3.22.2' # Standardized specific version for consistency
+
+    - name: Cache Flutter dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.pub-cache
+        key: ${{ runner.os }}-pub-cache-${{ hashFiles('pubspec.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pub-cache-
 
     - name: Install RPM build dependencies
       run: |
@@ -31,22 +47,29 @@ jobs:
 
     - name: Create source tarball
       run: |
-        mkdir -p rpm_source/libreconvert-1.0.0
-        cp -r build/linux/x64/release/bundle/* rpm_source/libreconvert-1.0.0/
-        tar -czvf libreconvert-1.0.0-bin.tar.gz -C rpm_source libreconvert-1.0.0
+        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
+        mkdir -p rpm_source/libreconvert-${VERSION}
+        cp -r build/linux/x64/release/bundle/* rpm_source/libreconvert-${VERSION}/
+        tar -czvf libreconvert-${VERSION}-bin.tar.gz -C rpm_source libreconvert-${VERSION}
 
     - name: Move spec file and source tarball
       run: |
+        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
         mv libreconvert.spec rpmbuild/SPECS/
-        mv libreconvert-1.0.0-bin.tar.gz rpmbuild/SOURCES/
+        mv libreconvert-${VERSION}-bin.tar.gz rpmbuild/SOURCES/
 
     - name: Build RPM
       run: rpmbuild -ba --define '_topdir ${{ github.workspace }}/rpmbuild' rpmbuild/SPECS/libreconvert.spec
 
+    - name: Extract version from pubspec.yaml
+      run: |
+        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
     - name: Upload RPM artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: libreconvert-rpm
+        name: libreconvert-rpm-${{ env.VERSION }}-${{ github.sha }}
         path: rpmbuild/RPMS/x86_64/*.rpm
 
   build-deb:
@@ -56,10 +79,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Cache Flutter SDK
+      uses: actions/cache@v3
+      with:
+        path: ${{ runner.tool_cache }}/flutter
+        key: ${{ runner.os }}-flutter-3.22.2
+        restore-keys: |
+          ${{ runner.os }}-flutter-
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        flutter-version: '3.22.2' # Standardized specific version for consistency
+
+    - name: Cache Flutter dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.pub-cache
+        key: ${{ runner.os }}-pub-cache-${{ hashFiles('pubspec.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-pub-cache-
 
     - name: Get Flutter dependencies
       run: flutter pub get
@@ -94,8 +133,9 @@ jobs:
 
     - name: Create DEBIAN/control file
       run: |
+        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
         echo "Package: libreconvert" > deb_package/DEBIAN/control
-        echo "Version: 1.0.0" >> deb_package/DEBIAN/control
+        echo "Version: $VERSION" >> deb_package/DEBIAN/control
         echo "Section: x11" >> deb_package/DEBIAN/control
         echo "Priority: optional" >> deb_package/DEBIAN/control
         echo "Architecture: amd64" >> deb_package/DEBIAN/control
@@ -113,8 +153,13 @@ jobs:
     - name: Build .deb package
       run: dpkg-deb --build deb_package
 
+    - name: Extract version from pubspec.yaml
+      run: |
+        VERSION=$(grep 'version:' pubspec.yaml | head -1 | awk '{print $2}' | cut -d'+' -f1)
+        echo "VERSION=$VERSION" >> $GITHUB_ENV
+
     - name: Upload .deb artifact
       uses: actions/upload-artifact@v4
       with:
-        name: libreconvert-deb
+        name: libreconvert-deb-${{ env.VERSION }}-${{ github.sha }}
         path: deb_package.deb
