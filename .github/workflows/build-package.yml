@@ -37,7 +37,9 @@ jobs:
     - name: Install RPM build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y rpm patchelf libgtk-3-dev
+        sudo apt-get install -y rpm patchelf libgtk-3-dev pkg-config
+    - name: Create rpmbuild directory structure before copying spec
+      run: mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
     - name: Ensure libreconvert.spec is in place
       run: |
         if [ -f "libreconvert.spec" ]; then
@@ -49,9 +51,6 @@ jobs:
 
     - name: Build Flutter Linux release
       run: flutter build linux --release
-
-    - name: Create rpmbuild directory structure
-      run: mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 
     - name: Create source tarball
       run: |
