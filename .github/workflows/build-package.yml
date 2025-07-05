@@ -37,7 +37,7 @@ jobs:
     - name: Install RPM build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y rpm patchelf libgtk-3-dev pkg-config
+        sudo apt-get install -y rpm patchelf libgtk-3-dev pkg-config gtk+3.0 desktop-file-utils
     - name: Create rpmbuild directory structure before copying spec
       run: mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
     - name: Ensure libreconvert.spec is in place
