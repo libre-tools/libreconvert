@@ -17,14 +17,14 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ runner.tool_cache }}/flutter
-        key: ${{ runner.os }}-flutter-3.22.2
+        key: ${{ runner.os }}-flutter-stable
         restore-keys: |
           ${{ runner.os }}-flutter-
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.22.2' # Standardized specific version for consistency
+        channel: 'stable' # Using stable channel for dynamic versioning
 
     - name: Cache Flutter dependencies
       uses: actions/cache@v3
@@ -83,14 +83,14 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ runner.tool_cache }}/flutter
-        key: ${{ runner.os }}-flutter-3.22.2
+        key: ${{ runner.os }}-flutter-stable
         restore-keys: |
           ${{ runner.os }}-flutter-
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.22.2' # Standardized specific version for consistency
+        channel: 'stable' # Using stable channel for dynamic versioning
 
     - name: Cache Flutter dependencies
       uses: actions/cache@v3
