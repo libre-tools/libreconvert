@@ -1,4 +1,4 @@
-name: Build RPM and DEB
+name: Build DEB
 
 on:
   push:
@@ -6,103 +6,6 @@ on:
       - main
 
 jobs:
-  build-rpm:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Cache Flutter SDK
-      uses: actions/cache@v3
-      with:
-        path: ${{ runner.tool_cache }}/flutter
-        key: ${{ runner.os }}-flutter-stable
-        restore-keys: |
-          ${{ runner.os }}-flutter-
-
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-
-    - name: Cache Flutter dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.pub-cache
-        key: ${{ runner.os }}-pub-cache-${{ hashFiles('pubspec.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-pub-cache-
-
-    - name: Remove conflicting CMake
-      run: |
-        sudo rm -rf /usr/local/bin/cmake
-        sudo rm -rf /usr/local/share/cmake-3.31
-        sudo apt-get update
-        sudo apt-get install -y cmake
-
-    - name: Install Linux build dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          build-essential \
-          clang \
-          cmake \
-          ninja-build \
-          pkg-config \
-          libgtk-3-dev \
-          libblkid-dev \
-          liblzma-dev \
-          liblz4-dev \
-          libzstd-dev \
-          desktop-file-utils \
-          rpm \
-          patchelf
-
-    - name: Fix PKG_CONFIG_PATH
-      run: echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> $GITHUB_ENV
-
-    - name: Create rpmbuild directory structure
-      run: mkdir -p rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-
-    - name: Copy RPM spec file
-      run: |
-        if [ -f "libreconvert.spec" ]; then
-          cp libreconvert.spec rpmbuild/SPECS/
-        else
-          echo "Error: libreconvert.spec not found in root directory"
-          exit 1
-        fi
-
-    - name: Build Flutter Linux release
-      run: flutter build linux --release
-
-    - name: Create source tarball
-      run: |
-        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
-        mkdir -p rpm_source/libreconvert-${VERSION}
-        cp -r build/linux/x64/release/bundle/* rpm_source/libreconvert-${VERSION}/
-        tar -czvf libreconvert-${VERSION}-bin.tar.gz -C rpm_source libreconvert-${VERSION}
-
-    - name: Move tarball to SOURCES
-      run: |
-        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
-        mv libreconvert-${VERSION}-bin.tar.gz rpmbuild/SOURCES/
-
-    - name: Build RPM
-      run: rpmbuild -ba --define '_topdir ${{ github.workspace }}/rpmbuild' rpmbuild/SPECS/libreconvert.spec
-
-    - name: Extract version
-      run: |
-        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
-    - name: Upload RPM artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: libreconvert-rpm-${{ env.VERSION }}-${{ github.sha }}
-        path: rpmbuild/RPMS/x86_64/*.rpm
-
   build-deb:
     runs-on: ubuntu-latest
 
