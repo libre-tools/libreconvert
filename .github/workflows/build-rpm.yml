@@ -67,13 +67,8 @@ jobs:
     - name: Build RPM
       run: rpmbuild -ba --define '_topdir ${{ github.workspace }}/rpmbuild' rpmbuild/SPECS/libreconvert.spec
 
-    - name: Extract version
-      run: |
-        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
     - name: Upload RPM artifact
       uses: actions/upload-artifact@v4
       with:
-        name: libreconvert-rpm-${{ env.VERSION }}-${{ github.sha }}
+        name: libreconvert-rpm-$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)-${{ github.sha }}
         path: rpmbuild/RPMS/x86_64/*.rpm

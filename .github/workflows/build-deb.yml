@@ -90,7 +90,15 @@ jobs:
         echo "Priority: optional" >> deb_package/DEBIAN/control
         echo "Architecture: amd64" >> deb_package/DEBIAN/control
         echo "Maintainer: Raja <libretools@protonmail.com>" >> deb_package/DEBIAN/control
-        echo "Depends: libgtk-3-0, libappindicator3-1, libjson-glib-1.0-0, libsecret-1-0, libglib2.0-0, libgdk-pixbuf2.0-0, libatk-bridge2.0-0, libsoup2.4-1, libwebkit2gtk-4.0-37" >> deb_package/DEBIAN/control
+        echo "Depends: libgtk-3-0," >> deb_package/DEBIAN/control
+        echo " libappindicator3-1," >> deb_package/DEBIAN/control
+        echo " libjson-glib-1.0-0," >> deb_package/DEBIAN/control
+        echo " libsecret-1-0," >> deb_package/DEBIAN/control
+        echo " libglib2.0-0," >> deb_package/DEBIAN/control
+        echo " libgdk-pixbuf2.0-0," >> deb_package/DEBIAN/control
+        echo " libatk-bridge2.0-0," >> deb_package/DEBIAN/control
+        echo " libsoup2.4-1," >> deb_package/DEBIAN/control
+        echo " libwebkit2gtk-4.0-37" >> deb_package/DEBIAN/control
         echo "Description: A file conversion tool built with Flutter." >> deb_package/DEBIAN/control
         echo " This application allows you to convert various file formats." >> deb_package/DEBIAN/control
 
@@ -103,7 +111,7 @@ jobs:
         cp assets/logo.png deb_package/usr/share/icons/hicolor/scalable/apps/libreconvert.png
         chmod 755 deb_package/opt/libreconvert/libreconvert
 
-    - name: Debugging: Check executable permissions and desktop file
+    - name: Debug executable permissions and desktop file
       run: |
         echo "Permissions of deb_package/opt/libreconvert/libreconvert:"
         ls -l deb_package/opt/libreconvert/libreconvert
@@ -115,13 +123,8 @@ jobs:
     - name: Build DEB package
       run: dpkg-deb --build deb_package
 
-    - name: Extract version
-      run: |
-        VERSION=$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
-        echo "VERSION=$VERSION" >> $GITHUB_ENV
-
     - name: Upload DEB artifact
       uses: actions/upload-artifact@v4
       with:
-        name: libreconvert-deb-${{ env.VERSION }}-${{ github.sha }}
+        name: libreconvert-deb-$(grep 'version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)-${{ github.sha }}
         path: deb_package.deb
