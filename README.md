@@ -34,23 +34,139 @@ LibreConvert relies on external command-line tools for its conversion capabiliti
 
 #### 1. FFmpeg (for Audio & Video Conversions)
 
-   **Linux (Debian/Ubuntu):**
+*   **Linux (Debian/Ubuntu):**
     ```bash
     sudo apt update
     sudo apt install ffmpeg
     ```
-
-- **Linux (Fedora):**
-
+*   **Linux (Fedora):**
     ```bash
     sudo dnf install ffmpeg
     ```
-
-- **Linux (Arch Linux):**
-
+*   **Linux (Arch Linux):**
     ```bash
     sudo pacman -S ffmpeg
     ```
+*   **macOS (using Homebrew):**
+    ```bash
+    brew install ffmpeg
+    ```
+*   **Windows (using Chocolatey):**
+    ```bash
+    choco install ffmpeg
+    ```
+    (Alternatively, download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH.)
+
+#### 2. ImageMagick (for Image Conversions)
+
+*   **Linux (Debian/Ubuntu):**
+    ```bash
+    sudo apt update
+    sudo apt install imagemagick
+    ```
+*   **Linux (Fedora):**
+    ```bash
+    sudo dnf install ImageMagick
+    ```
+*   **Linux (Arch Linux):**
+    ```bash
+    sudo pacman -S imagemagick
+    ```
+*   **macOS (using Homebrew):**
+    ```bash
+    brew install imagemagick
+    ```
+*   **Windows (using Chocolatey):**
+    ```bash
+    choco install imagemagick
+    ```
+    (Alternatively, download from [imagemagick.org](https://imagemagick.org/script/download.php) and add to PATH.)
+
+#### 3. Pandoc (for Document Conversions)
+
+*   **Linux (Debian/Ubuntu):**
+    ```bash
+    sudo apt update
+    sudo apt install pandoc
+    ```
+*   **Linux (Fedora):**
+    ```bash
+    sudo dnf install pandoc
+    ```
+*   **Linux (Arch Linux):**
+    ```bash
+    sudo pacman -S pandoc
+    ```
+*   **macOS (using Homebrew):**
+    ```bash
+    brew install pandoc
+    ```
+*   **Windows (using Chocolatey):**
+    ```bash
+    choco install pandoc
+    ```
+    (Alternatively, download from [pandoc.org](https://pandoc.org/installing.html) and add to PATH.)
+
+#### 4. TeX Live (for Advanced Document Conversions, e.g., PDF output from Pandoc)
+
+*   **Linux (Debian/Ubuntu):**
+    ```bash
+    sudo apt update
+    sudo apt install texlive-full # Installs a comprehensive TeX Live distribution
+    ```
+    (For a smaller installation, consider `texlive-latex-extra` and `texlive-fonts-recommended`.)
+*   **Linux (Fedora):**
+    ```bash
+    sudo dnf install texlive-scheme-full
+    ```
+*   **Linux (Arch Linux):**
+    ```bash
+    sudo pacman -S texlive-most
+    ```
+*   **macOS:** Install [MacTeX](https://www.tug.org/mactex/).
+*   **Windows:** Install [MiKTeX](https://miktex.org/download) or [TeX Live](https://www.tug.org/texlive/acquire-iso.html).
+
+#### 5. `xdg-desktop-portal` and `zenity` (for File Picker on Linux)
+
+For the file picker to function correctly on Linux, especially on Arch-based distributions, you may need `xdg-desktop-portal` and `zenity`.
+
+*   **Install `xdg-desktop-portal`:**
+    ```bash
+    sudo pacman -S xdg-desktop-portal
+    ```
+*   **Install a backend specific to your desktop environment (e.g., for GNOME/GTK):**
+    ```bash
+    sudo pacman -S xdg-desktop-portal-gtk
+    ```
+    (Replace `xdg-desktop-portal-gtk` with `xdg-desktop-portal-kde` for KDE, etc.)
+*   **Install `zenity`:**
+    ```bash
+    sudo pacman -S zenity
+    ```
+
+---
+
+### Installation
+
+1.  Clone the repository:
+
+    ```bash
+    git clone https://github.com/libre-tools/libreconvert.git
+    cd libreconvert
+    ```
+
+2.  Install Flutter dependencies:
+
+    ```bash
+    flutter pub get
+    ```
+
+3.  Run the application:
+
+    ```bash
+    flutter run -d linux  # or -d macos, -d windows depending on your platform
+    ```
+
 
 - **macOS (using Homebrew):**
 
