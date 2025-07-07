@@ -59,3 +59,5 @@ libreconvert.deb
 PKGBUILD
 instructions.md
 pending_implementations.md
+libreconvert-1.0.0-amd64.deb
+libreconvert-1.0.0-x86_64.rpm

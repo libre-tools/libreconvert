@@ -41,7 +41,7 @@ libreconvert is designed to provide a user-friendly experience for converting fi
 1. Clone the repository (replace `yourusername` with the actual GitHub username or organization):
 
    ```bash
-   git clone https://github.com/yourusername/libreconvert.git
+   git clone https://github.com/libre-tools/libreconvert.git
    cd libreconvert
    ```
 
