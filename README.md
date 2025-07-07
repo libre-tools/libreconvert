@@ -12,6 +12,8 @@ If you find this project useful, consider supporting it by buying me a coffee:
 
 libreconvert is designed to provide a user-friendly experience for converting files locally on your desktop, ensuring privacy and accessibility without requiring an internet connection. The application features a clean GUI for selecting files, choosing output formats, monitoring conversion progress, and configuring advanced settings.
 
+![LibreConvert App Screenshot](assets/app.png)
+
 ## Core Features
 
 - **File Selection**: Select single or multiple files for conversion using native file dialogs.
