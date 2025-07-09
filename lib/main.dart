@@ -8,6 +8,10 @@ void main() async {
   await windowManager.ensureInitialized();
 
   windowManager.setResizable(false);
+  const Size windowSize = Size(800, 450);
+  windowManager.setSize(windowSize);
+  windowManager.setMinimumSize(windowSize);
+  windowManager.setMaximumSize(windowSize);
 
   windowManager.setTitleBarStyle(TitleBarStyle.normal);
   windowManager.setTitle('LibreConvert');

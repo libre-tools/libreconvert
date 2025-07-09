@@ -144,80 +144,113 @@ class _FileSelectorState extends State<FileSelector> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (selectedFiles.isEmpty)
-          DropTarget(
-            onDragDone: (detail) {
-              final paths = detail.files.map((file) => file.path).toList();
-              final extensions = paths
-                  .map((path) => path.split('.').last.toLowerCase())
-                  .toList();
-              final pdfPaths = paths
-                  .where((path) => path.toLowerCase().endsWith('.pdf'))
-                  .toList();
-              if (pdfPaths.isNotEmpty) {
-                if (mounted) {
-                  shadcnui.showToast(
-                    context: context,
-                    builder: (context, overlay) {
-                      return shadcnui.SurfaceCard(
-                        child: shadcnui.Basic(
-                          title: const Text('PDF Not Supported'),
-                          subtitle: const Text(
-                            'PDF conversion is not supported yet.',
-                          ),
-                          trailing: shadcnui.PrimaryButton(
-                            size: shadcnui.ButtonSize.small,
-                            onPressed: () {
-                              overlay.close();
-                            },
-                            child: const Text('OK'),
-                          ),
-                          trailingAlignment: Alignment.center,
+        Expanded(
+          child: selectedFiles.isEmpty
+              ? DropTarget(
+                  onDragDone: (detail) {
+                    final paths = detail.files
+                        .map((file) => file.path)
+                        .toList();
+                    final extensions = paths
+                        .map((path) => path.split('.').last.toLowerCase())
+                        .toList();
+                    final pdfPaths = paths
+                        .where((path) => path.toLowerCase().endsWith('.pdf'))
+                        .toList();
+                    if (pdfPaths.isNotEmpty) {
+                      if (mounted) {
+                        shadcnui.showToast(
+                          context: context,
+                          builder: (context, overlay) {
+                            return shadcnui.SurfaceCard(
+                              child: shadcnui.Basic(
+                                title: const Text('PDF Not Supported'),
+                                subtitle: const Text(
+                                  'PDF conversion is not supported yet.',
+                                ),
+                                trailing: shadcnui.PrimaryButton(
+                                  size: shadcnui.ButtonSize.small,
+                                  onPressed: () {
+                                    overlay.close();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                                trailingAlignment: Alignment.center,
+                              ),
+                            );
+                          },
+                          location: shadcnui.ToastLocation.bottomRight,
+                        );
+                      }
+                    } else if (_checkFileExtensionConsistency(extensions)) {
+                      setState(() {
+                        selectedFiles = paths;
+                        widget.onFilesSelected(selectedFiles, extensions);
+                      });
+                    } else {
+                      if (mounted) {
+                        shadcnui.showToast(
+                          context: context,
+                          builder: (context, overlay) {
+                            return shadcnui.SurfaceCard(
+                              child: shadcnui.Basic(
+                                title: const Text('Invalid Drop'),
+                                subtitle: const Text(
+                                  'Mixed file formats are not allowed. Please drop files with the same format (e.g., only .txt or only .md).',
+                                ),
+                                trailing: shadcnui.PrimaryButton(
+                                  size: shadcnui.ButtonSize.small,
+                                  onPressed: () {
+                                    overlay.close();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                                trailingAlignment: Alignment.center,
+                              ),
+                            );
+                          },
+                          location: shadcnui.ToastLocation.bottomRight,
+                        );
+                      }
+                    }
+                  },
+                  child: GestureDetector(
+                    onTap: _pickFiles,
+                    child: MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: DottedBorder(
+                        options: RoundedRectDottedBorderOptions(
+                          color: shadcnui.Theme.of(
+                            context,
+                          ).colorScheme.accentForeground,
+                          dashPattern: [10, 5],
+                          strokeWidth: 2,
+                          radius: const Radius.circular(8),
+                          padding: EdgeInsets.symmetric(vertical: 8),
                         ),
-                      );
-                    },
-                    location: shadcnui.ToastLocation.bottomRight,
-                  );
-                }
-              } else if (_checkFileExtensionConsistency(extensions)) {
-                setState(() {
-                  selectedFiles = paths;
-                  widget.onFilesSelected(selectedFiles, extensions);
-                });
-              } else {
-                if (mounted) {
-                  shadcnui.showToast(
-                    context: context,
-                    builder: (context, overlay) {
-                      return shadcnui.SurfaceCard(
-                        child: shadcnui.Basic(
-                          title: const Text('Invalid Drop'),
-                          subtitle: const Text(
-                            'Mixed file formats are not allowed. Please drop files with the same format (e.g., only .txt or only .md).',
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.cloud_upload_outlined, size: 40),
+                                shadcnui.gap(10),
+                                Text(
+                                  "Drag and drop files here, or click to select files",
+                                  textAlign: TextAlign.center,
+                                ),
+                              ],
+                            ),
                           ),
-                          trailing: shadcnui.PrimaryButton(
-                            size: shadcnui.ButtonSize.small,
-                            onPressed: () {
-                              overlay.close();
-                            },
-                            child: const Text('OK'),
-                          ),
-                          trailingAlignment: Alignment.center,
                         ),
-                      );
-                    },
-                    location: shadcnui.ToastLocation.bottomRight,
-                  );
-                }
-              }
-            },
-            child: GestureDetector(
-              onTap: _pickFiles,
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: DottedBorder(
+                      ),
+                    ),
+                  ),
+                )
+              : DottedBorder(
                   options: RoundedRectDottedBorderOptions(
                     color: shadcnui.Theme.of(
                       context,
@@ -225,167 +258,133 @@ class _FileSelectorState extends State<FileSelector> {
                     dashPattern: [10, 5],
                     strokeWidth: 2,
                     radius: const Radius.circular(8),
-
                     padding: EdgeInsets.symmetric(vertical: 8),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: SizedBox(
-                      height: 300,
-                      width: double.infinity,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.cloud_upload_outlined, size: 40),
-                            shadcnui.gap(10),
-                            Text(
-                              "Drag and drop files here, or click to select files",
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                  child: ListView.builder(
+                    itemCount: selectedFiles.length,
+                    itemBuilder: (context, index) {
+                      final filePath = selectedFiles[index];
+                      final fileName = filePath.split('/').last;
+                      final extension = fileName.split('.').last.toLowerCase();
+                      IconData previewIcon;
+                      if ([
+                        'png',
+                        'jpg',
+                        'jpeg',
+                        'gif',
+                        'bmp',
+                        'webp',
+                      ].contains(extension)) {
+                        previewIcon = Icons.image;
+                      } else if ([
+                        'mp3',
+                        'wav',
+                        'flac',
+                        'ogg',
+                        'aac',
+                        'm4a',
+                      ].contains(extension)) {
+                        previewIcon = Icons.audiotrack;
+                      } else if ([
+                        'mp4',
+                        'mkv',
+                        'avi',
+                        'mov',
+                        'wmv',
+                        'flv',
+                        'gif',
+                      ].contains(extension)) {
+                        previewIcon = Icons.videocam;
+                      } else if ([
+                        'pdf',
+                        'docx',
+                        'odt',
+                        'rtf',
+                        'txt',
+                        'html',
+                        'markdown',
+                        'epub',
+                      ].contains(extension)) {
+                        previewIcon = Icons.description;
+                      } else {
+                        previewIcon = Icons.insert_drive_file;
+                      }
+                      // Check if this file is in the conversion tasks
+                      final task = widget.conversionTasks.firstWhere(
+                        (t) => t.filePath == filePath,
+                        orElse: () => ConversionTask(
+                          id: '',
+                          filePath: '',
+                          fileType: '',
+                          targetFormat: '',
                         ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          )
-        else
-          DottedBorder(
-            options: RoundedRectDottedBorderOptions(
-              color: shadcnui.Theme.of(context).colorScheme.accentForeground,
-              dashPattern: [10, 5],
-              strokeWidth: 2,
-              radius: const Radius.circular(8),
-              padding: EdgeInsets.symmetric(vertical: 8),
-            ),
-            child: SizedBox(
-              height: 300,
-              width: double.infinity,
-              child: ListView.builder(
-                itemCount: selectedFiles.length,
-                itemBuilder: (context, index) {
-                  final filePath = selectedFiles[index];
-                  final fileName = filePath.split('/').last;
-                  final extension = fileName.split('.').last.toLowerCase();
-                  IconData previewIcon;
-                  if ([
-                    'png',
-                    'jpg',
-                    'jpeg',
-                    'gif',
-                    'bmp',
-                    'webp',
-                  ].contains(extension)) {
-                    previewIcon = Icons.image;
-                  } else if ([
-                    'mp3',
-                    'wav',
-                    'flac',
-                    'ogg',
-                    'aac',
-                    'm4a',
-                  ].contains(extension)) {
-                    previewIcon = Icons.audiotrack;
-                  } else if ([
-                    'mp4',
-                    'mkv',
-                    'avi',
-                    'mov',
-                    'wmv',
-                    'flv',
-                    'gif',
-                  ].contains(extension)) {
-                    previewIcon = Icons.videocam;
-                  } else if ([
-                    'pdf',
-                    'docx',
-                    'odt',
-                    'rtf',
-                    'txt',
-                    'html',
-                    'markdown',
-                    'epub',
-                  ].contains(extension)) {
-                    previewIcon = Icons.description;
-                  } else {
-                    previewIcon = Icons.insert_drive_file;
-                  }
-                  // Check if this file is in the conversion tasks
-                  final task = widget.conversionTasks.firstWhere(
-                    (t) => t.filePath == filePath,
-                    orElse: () => ConversionTask(
-                      id: '',
-                      filePath: '',
-                      fileType: '',
-                      targetFormat: '',
-                    ),
-                  );
+                      );
 
-                  return ListTile(
-                    leading: SizedBox(
-                      height: 50,
-                      width: 50,
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: Icon(
-                              previewIcon,
-                              size: 40,
-                              color: shadcnui.Colors.gray,
-                            ),
-                          ),
-                          if (task.filePath.isNotEmpty)
-                            Positioned.fill(
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Container(
-                                  color: Colors.black.withAlpha(50),
-                                  child: Center(
-                                    child: task.status == 'Completed'
-                                        ? const Icon(
-                                            Icons.check_circle_outline,
-                                            color: Colors.green,
-                                            size: 24,
-                                          )
-                                        : task.status == 'Failed'
-                                        ? const Icon(
-                                            Icons.error,
-                                            color: Colors.red,
-                                            size: 24,
-                                          )
-                                        : const CircularProgressIndicator(),
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2.0),
+                        child: ListTile(
+                          leading: SizedBox(
+                            height: 40,
+                            width: 40,
+                            child: Stack(
+                              children: [
+                                Center(
+                                  child: Icon(
+                                    previewIcon,
+                                    size: 30,
+                                    color: shadcnui.Colors.gray,
                                   ),
                                 ),
-                              ),
+                                if (task.filePath.isNotEmpty)
+                                  Positioned.fill(
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Container(
+                                        color: Colors.black.withAlpha(50),
+                                        child: Center(
+                                          child: task.status == 'Completed'
+                                              ? const Icon(
+                                                  Icons.check_circle_outline,
+                                                  color: Colors.green,
+                                                  size: 24,
+                                                )
+                                              : task.status == 'Failed'
+                                              ? const Icon(
+                                                  Icons.error,
+                                                  color: Colors.red,
+                                                  size: 24,
+                                                )
+                                              : const CircularProgressIndicator(),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
-                        ],
-                      ),
-                    ),
-                    title: Text(
-                      fileName,
-                      style: const TextStyle(
-                        color: Color.fromRGBO(17, 24, 39, 1),
-                        fontSize: 14,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      maxLines: 1,
-                      softWrap: false,
-                    ),
-                    trailing: shadcnui.IconButton.text(
-                      icon: const Icon(
-                        Icons.close,
-                        color: Color.fromRGBO(239, 68, 68, 1),
-                      ),
-                      onPressed: () => _removeFile(index),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
+                          ),
+                          title: Text(
+                            fileName,
+                            style: const TextStyle(
+                              color: Color.fromRGBO(17, 24, 39, 1),
+                              fontSize: 14,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            maxLines: 1,
+                            softWrap: false,
+                          ),
+                          trailing: shadcnui.IconButton.text(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Color.fromRGBO(239, 68, 68, 1),
+                            ),
+                            onPressed: () => _removeFile(index),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+        ),
         Visibility(
           visible: selectedFiles.isNotEmpty,
           child: Padding(

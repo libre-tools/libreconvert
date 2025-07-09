@@ -294,72 +294,66 @@ class _HomeScreenState extends State<HomeScreen> {
     final hasSelectedFiles = selectedFiles.isNotEmpty;
 
     return Material(
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
+      child: Center(
         child: Container(
           margin: const EdgeInsets.all(24.0),
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height - 48.0,
-          ),
-          child: Center(
-            child: Container(
-              constraints: const BoxConstraints(maxWidth: 800),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  HeaderWidget(
-                    title: 'Welcome to LibreConvert',
-                    subtitle: 'Select files to convert with ease.',
-                    actions: [
-                      if (selectedFiles.isNotEmpty)
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 200,
-                              child: FormatSelector(
-                                fileType: currentFileType,
-                                sourceExtension: selectedFiles.isNotEmpty
-                                    ? selectedFiles[0]
-                                        .split('.')
-                                        .last
-                                        .toLowerCase()
-                                    : null,
-                                onFormatSelected: _updateSelectedFormat,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            PrimaryButton(
-                              onPressed: isConverting ||
-                                      selectedFormat == null ||
-                                      selectedFiles.isEmpty
-                                  ? null
-                                  : () {
-                                      _startConversion(selectedFiles);
-                                    },
-                              child: const Text('Convert'),
-                            ),
-                            if (hasCompletedTasks && hasSelectedFiles) ...[
-                              const SizedBox(width: 12),
-                              PrimaryButton(
-                                onPressed: _saveAllConvertedFiles,
-                                child: const Text('Save'),
-                              ),
-                            ]
-                          ],
-                        )
-                    ],
-                  ),
-                  gap(30),
-                  FileSelector(
-                    onFilesSelected: _updateSelectedFiles,
-                    conversionTasks: conversionTasks,
-                  ),
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              HeaderWidget(
+                title: 'Welcome to LibreConvert',
+                subtitle: 'Select files to convert with ease.',
+                actions: [
+                  if (selectedFiles.isNotEmpty)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 180,
+                          child: FormatSelector(
+                            fileType: currentFileType,
+                            sourceExtension: selectedFiles.isNotEmpty
+                                ? selectedFiles[0]
+                                    .split('.')
+                                    .last
+                                    .toLowerCase()
+                                : null,
+                            onFormatSelected: _updateSelectedFormat,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        PrimaryButton(
+                          onPressed: isConverting ||
+                                  selectedFormat == null ||
+                                  selectedFiles.isEmpty
+                              ? null
+                              : () {
+                                  _startConversion(selectedFiles);
+                                },
+                          child: const Text('Convert'),
+                        ),
+                        if (hasCompletedTasks && hasSelectedFiles) ...[
+                          const SizedBox(width: 12),
+                          PrimaryButton(
+                            onPressed: _saveAllConvertedFiles,
+                            child: const Text('Save'),
+                          ),
+                        ]
+                      ],
+                    )
                 ],
               ),
-            ),
+              gap(15),
+              Expanded(
+                child: FileSelector(
+                  onFilesSelected: _updateSelectedFiles,
+                  conversionTasks: conversionTasks,
+                ),
+              ),
+            ],
           ),
         ),
       ),

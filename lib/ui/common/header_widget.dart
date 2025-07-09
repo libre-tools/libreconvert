@@ -26,17 +26,17 @@ class HeaderWidget extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
-              const Gap(4),
+              const Gap(2),
               Text(
                 subtitle,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 overflow: TextOverflow.ellipsis,
