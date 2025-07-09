@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:desktop_drop/desktop_drop.dart';
-import 'package:shadcn_flutter/shadcn_flutter.dart';
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcnui;
+import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
 
 import 'package:libreconvert/models/conversion_task.dart';
@@ -58,15 +59,15 @@ class _FileSelectorState extends State<FileSelector> {
           .toList();
       if (pdfPaths.isNotEmpty) {
         if (mounted) {
-          showToast(
+          shadcnui.showToast(
             context: context,
             builder: (context, overlay) {
-              return SurfaceCard(
-                child: Basic(
+              return shadcnui.SurfaceCard(
+                child: shadcnui.Basic(
                   title: const Text('PDF Not Supported'),
                   subtitle: const Text('PDF conversion is not supported yet.'),
-                  trailing: PrimaryButton(
-                    size: ButtonSize.small,
+                  trailing: shadcnui.PrimaryButton(
+                    size: shadcnui.ButtonSize.small,
                     onPressed: () {
                       overlay.close();
                     },
@@ -76,7 +77,7 @@ class _FileSelectorState extends State<FileSelector> {
                 ),
               );
             },
-            location: ToastLocation.bottomRight,
+            location: shadcnui.ToastLocation.bottomRight,
           );
         }
       } else if (_checkFileExtensionConsistency(extensions)) {
@@ -86,17 +87,17 @@ class _FileSelectorState extends State<FileSelector> {
         });
       } else {
         if (mounted) {
-          showToast(
+          shadcnui.showToast(
             context: context,
             builder: (context, overlay) {
-              return SurfaceCard(
-                child: Basic(
+              return shadcnui.SurfaceCard(
+                child: shadcnui.Basic(
                   title: const Text('Invalid Selection'),
                   subtitle: const Text(
                     'Mixed file formats are not allowed. Please select files with the same format (e.g., only .txt or only .md).',
                   ),
-                  trailing: PrimaryButton(
-                    size: ButtonSize.small,
+                  trailing: shadcnui.PrimaryButton(
+                    size: shadcnui.ButtonSize.small,
                     onPressed: () {
                       overlay.close();
                     },
@@ -106,7 +107,7 @@ class _FileSelectorState extends State<FileSelector> {
                 ),
               );
             },
-            location: ToastLocation.bottomRight,
+            location: shadcnui.ToastLocation.bottomRight,
           );
         }
       }
@@ -157,17 +158,17 @@ class _FileSelectorState extends State<FileSelector> {
                   .toList();
               if (pdfPaths.isNotEmpty) {
                 if (mounted) {
-                  showToast(
+                  shadcnui.showToast(
                     context: context,
                     builder: (context, overlay) {
-                      return SurfaceCard(
-                        child: Basic(
+                      return shadcnui.SurfaceCard(
+                        child: shadcnui.Basic(
                           title: const Text('PDF Not Supported'),
                           subtitle: const Text(
                             'PDF conversion is not supported yet.',
                           ),
-                          trailing: PrimaryButton(
-                            size: ButtonSize.small,
+                          trailing: shadcnui.PrimaryButton(
+                            size: shadcnui.ButtonSize.small,
                             onPressed: () {
                               overlay.close();
                             },
@@ -177,7 +178,7 @@ class _FileSelectorState extends State<FileSelector> {
                         ),
                       );
                     },
-                    location: ToastLocation.bottomRight,
+                    location: shadcnui.ToastLocation.bottomRight,
                   );
                 }
               } else if (_checkFileExtensionConsistency(extensions)) {
@@ -187,17 +188,17 @@ class _FileSelectorState extends State<FileSelector> {
                 });
               } else {
                 if (mounted) {
-                  showToast(
+                  shadcnui.showToast(
                     context: context,
                     builder: (context, overlay) {
-                      return SurfaceCard(
-                        child: Basic(
+                      return shadcnui.SurfaceCard(
+                        child: shadcnui.Basic(
                           title: const Text('Invalid Drop'),
                           subtitle: const Text(
                             'Mixed file formats are not allowed. Please drop files with the same format (e.g., only .txt or only .md).',
                           ),
-                          trailing: PrimaryButton(
-                            size: ButtonSize.small,
+                          trailing: shadcnui.PrimaryButton(
+                            size: shadcnui.ButtonSize.small,
                             onPressed: () {
                               overlay.close();
                             },
@@ -207,7 +208,7 @@ class _FileSelectorState extends State<FileSelector> {
                         ),
                       );
                     },
-                    location: ToastLocation.bottomRight,
+                    location: shadcnui.ToastLocation.bottomRight,
                   );
                 }
               }
@@ -218,7 +219,9 @@ class _FileSelectorState extends State<FileSelector> {
                 cursor: SystemMouseCursors.click,
                 child: DottedBorder(
                   options: RoundedRectDottedBorderOptions(
-                    color: Theme.of(context).colorScheme.accentForeground,
+                    color: shadcnui.Theme.of(
+                      context,
+                    ).colorScheme.accentForeground,
                     dashPattern: [10, 5],
                     strokeWidth: 2,
                     radius: const Radius.circular(8),
@@ -235,7 +238,7 @@ class _FileSelectorState extends State<FileSelector> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.cloud_upload_outlined, size: 40),
-                            gap(10),
+                            shadcnui.gap(10),
                             Text(
                               "Drag and drop files here, or click to select files",
                               textAlign: TextAlign.center,
@@ -252,19 +255,16 @@ class _FileSelectorState extends State<FileSelector> {
         else
           DottedBorder(
             options: RoundedRectDottedBorderOptions(
-              color: Theme.of(context).colorScheme.accentForeground,
+              color: shadcnui.Theme.of(context).colorScheme.accentForeground,
               dashPattern: [10, 5],
               strokeWidth: 2,
               radius: const Radius.circular(8),
-              padding: EdgeInsets.symmetric(horizontal: 8),
+              padding: EdgeInsets.symmetric(vertical: 8),
             ),
             child: SizedBox(
               height: 300,
               width: double.infinity,
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 120,
-                ),
+              child: ListView.builder(
                 itemCount: selectedFiles.length,
                 itemBuilder: (context, index) {
                   final filePath = selectedFiles[index];
@@ -324,75 +324,63 @@ class _FileSelectorState extends State<FileSelector> {
                     ),
                   );
 
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Stack(
-                        alignment: Alignment.topRight,
+                  return ListTile(
+                    leading: SizedBox(
+                      height: 50,
+                      width: 50,
+                      child: Stack(
                         children: [
-                          SizedBox(
-                            height: 80,
-                            width: 80,
-                            child: Stack(
-                              children: [
-                                Center(
-                                  child: Icon(
-                                    previewIcon,
-                                    size: 70,
-                                    color: Colors.gray,
+                          Center(
+                            child: Icon(
+                              previewIcon,
+                              size: 40,
+                              color: shadcnui.Colors.gray,
+                            ),
+                          ),
+                          if (task.filePath.isNotEmpty)
+                            Positioned.fill(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Container(
+                                  color: Colors.black.withAlpha(50),
+                                  child: Center(
+                                    child: task.status == 'Completed'
+                                        ? const Icon(
+                                            Icons.check_circle_outline,
+                                            color: Colors.green,
+                                            size: 24,
+                                          )
+                                        : task.status == 'Failed'
+                                        ? const Icon(
+                                            Icons.error,
+                                            color: Colors.red,
+                                            size: 24,
+                                          )
+                                        : const CircularProgressIndicator(),
                                   ),
                                 ),
-                                if (task.filePath.isNotEmpty)
-                                  Positioned.fill(
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Container(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.5,
-                                        ),
-                                        child: Center(
-                                          child: task.status == 'Completed'
-                                              ? const Icon(
-                                                  Icons.check_circle_outline,
-                                                  color: Colors.green,
-                                                  size: 32,
-                                                )
-                                              : task.status == 'Failed'
-                                              ? const Icon(
-                                                  Icons.error,
-                                                  color: Colors.red,
-                                                  size: 32,
-                                                )
-                                              : const CircularProgressIndicator(),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                              ],
+                              ),
                             ),
-                          ),
-                          IconButton.text(
-                            icon: const Icon(
-                              Icons.remove_circle,
-                              color: Color.fromRGBO(239, 68, 68, 1),
-                            ),
-                            onPressed: () => _removeFile(index),
-                          ),
                         ],
                       ),
-                      Text(
-                        fileName,
-                        style: const TextStyle(
-                          color: Color.fromRGBO(17, 24, 39, 1),
-                          fontSize: 12,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        softWrap: true,
+                    ),
+                    title: Text(
+                      fileName,
+                      style: const TextStyle(
+                        color: Color.fromRGBO(17, 24, 39, 1),
+                        fontSize: 14,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
+                      maxLines: 1,
+                      softWrap: false,
+                    ),
+                    trailing: shadcnui.IconButton.text(
+                      icon: const Icon(
+                        Icons.close,
+                        color: Color.fromRGBO(239, 68, 68, 1),
+                      ),
+                      onPressed: () => _removeFile(index),
+                    ),
                   );
                 },
               ),
@@ -412,7 +400,7 @@ class _FileSelectorState extends State<FileSelector> {
                     fontSize: 14,
                   ),
                 ),
-                DestructiveButton(
+                shadcnui.DestructiveButton(
                   enabled: true,
                   onPressed: () async {
                     setState(() {

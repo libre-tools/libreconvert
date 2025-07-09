@@ -313,38 +313,43 @@ class _HomeScreenState extends State<HomeScreen> {
                     subtitle: 'Select files to convert with ease.',
                     actions: [
                       if (selectedFiles.isNotEmpty)
-                        Container(
-                          width: 200,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(12)),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: FormatSelector(
-                              fileType: currentFileType,
-                              sourceExtension: selectedFiles.isNotEmpty
-                                  ? selectedFiles[0]
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 200,
+                              child: FormatSelector(
+                                fileType: currentFileType,
+                                sourceExtension: selectedFiles.isNotEmpty
+                                    ? selectedFiles[0]
                                         .split('.')
                                         .last
                                         .toLowerCase()
-                                  : null,
-                              onFormatSelected: _updateSelectedFormat,
+                                    : null,
+                                onFormatSelected: _updateSelectedFormat,
+                              ),
                             ),
-                          ),
-                        ),
-                      if (selectedFiles.isNotEmpty)
-                        PrimaryButton(
-                          onPressed:
-                              isConverting ||
-                                  selectedFormat == null ||
-                                  selectedFiles.isEmpty
-                              ? null
-                              : () {
-                                  _startConversion(selectedFiles);
-                                },
-
-                          child: const Text('Convert'),
-                        ),
+                            const SizedBox(width: 12),
+                            PrimaryButton(
+                              onPressed: isConverting ||
+                                      selectedFormat == null ||
+                                      selectedFiles.isEmpty
+                                  ? null
+                                  : () {
+                                      _startConversion(selectedFiles);
+                                    },
+                              child: const Text('Convert'),
+                            ),
+                            if (hasCompletedTasks && hasSelectedFiles) ...[
+                              const SizedBox(width: 12),
+                              PrimaryButton(
+                                onPressed: _saveAllConvertedFiles,
+                                child: const Text('Save'),
+                              ),
+                            ]
+                          ],
+                        )
                     ],
                   ),
                   gap(30),
@@ -352,14 +357,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     onFilesSelected: _updateSelectedFiles,
                     conversionTasks: conversionTasks,
                   ),
-                  if (hasCompletedTasks && hasSelectedFiles)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 24.0),
-                      child: PrimaryButton(
-                        onPressed: _saveAllConvertedFiles,
-                        child: const Text('Save'),
-                      ),
-                    ),
                 ],
               ),
             ),
