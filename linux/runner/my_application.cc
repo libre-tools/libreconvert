@@ -48,7 +48,16 @@ static void my_application_activate(GApplication* application) {
   }
 
   gtk_window_set_default_size(window, 720, 360);
-  gtk_widget_show(GTK_WIDGET(window));
+  gtk_widget_realize(GTK_WIDGET(window));
+  gtk_widget_hide(GTK_WIDGET(window));
+
+  // Set background color using CSS
+  GtkCssProvider* provider = gtk_css_provider_new();
+  gtk_css_provider_load_from_data(provider, "window { background-color: #FFFFFF; }", -1, NULL);
+  gtk_style_context_add_provider_for_screen(gdk_screen_get_default(), GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  g_object_unref(provider);
+
+  
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(project, self->dart_entrypoint_arguments);

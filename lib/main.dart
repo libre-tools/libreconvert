@@ -13,6 +13,8 @@ void main() async {
   windowManager.setTitle('LibreConvert');
 
   runApp(const MyApp());
+  await windowManager.show();
+  await windowManager.focus();
 }
 
 class MyApp extends StatelessWidget {
