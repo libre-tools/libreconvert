@@ -165,7 +165,42 @@ LibreConvert relies on external command-line tools for its conversion capabiliti
 
 - **Windows:** Install [MiKTeX](https://miktex.org/download) or [TeX Live](https://www.tug.org/texlive/acquire-iso.html).
 
-#### 5. `xdg-desktop-portal` and `zenity` (for File Picker on Arch Linux)
+#### 5. Potrace (for JPG/PNG to SVG Conversions)
+
+- **Linux (Debian/Ubuntu):**
+
+    ```bash
+    sudo apt update
+    sudo apt install potrace
+    ```
+
+- **Linux (Fedora):**
+
+    ```bash
+    sudo dnf install potrace
+    ```
+
+- **Linux (Arch Linux):**
+
+    ```bash
+    sudo pacman -S potrace
+    ```
+
+- **macOS (using Homebrew):**
+
+    ```bash
+    brew install potrace
+    ```
+
+- **Windows (using Chocolatey):**
+
+    ```bash
+    choco install potrace
+    ```
+
+    (Alternatively, download from [potrace.sourceforge.net](http://potrace.sourceforge.net/) and add to PATH.)
+
+#### 6. `xdg-desktop-portal` and `zenity` (for File Picker on Arch Linux)
 
 For the file picker to function correctly on Arch-based distributions, you may need `xdg-desktop-portal` and `zenity`.
 

@@ -22,6 +22,7 @@ class ToolChecker {
       'imagemagick': ['magick', 'convert'], // Check for both common ImageMagick executables
       'pandoc': ['pandoc'],
       'texlive': ['pdflatex', 'xelatex'], // Check for common TeX Live executables
+      'potrace': ['potrace'], // Check for potrace for SVG conversions
     };
 
     final Map<String, bool> installedTools = {};

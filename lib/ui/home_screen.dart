@@ -38,16 +38,16 @@ class _HomeScreenState extends State<HomeScreen> {
       selectedFiles = files;
       if (extensions.isNotEmpty) {
         String ext = extensions[0].toLowerCase();
-        if (['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp'].contains(ext)) {
+        if (['png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'avif', 'heif', 'heic', 'svg'].contains(ext)) {
           currentFileType = 'image';
           currentCategory = 'Image';
-        } else if (['mp3', 'wav', 'flac', 'ogg'].contains(ext)) {
+        } else if (['mp3', 'wav', 'flac', 'ogg', 'aac', 'm4a', 'opus'].contains(ext)) {
           currentFileType = 'audio';
           currentCategory = 'Audio';
         } else if (['mp4', 'mkv', 'avi', 'mov', 'webm'].contains(ext)) {
           currentFileType = 'video';
           currentCategory = 'Video';
-        } else if (['md', 'html', 'pdf', 'docx', 'odt', 'txt'].contains(ext)) {
+        } else if (['md', 'html', 'pdf', 'docx', 'odt', 'txt', 'djvu'].contains(ext)) {
           currentFileType = 'document';
           currentCategory = 'Document';
         }

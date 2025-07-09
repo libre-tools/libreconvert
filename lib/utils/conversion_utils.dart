@@ -104,7 +104,7 @@ class ConversionUtils {
   ) async {
     try {
       // Check if ImageMagick is available
-      bool imagemagickAvailable = await checkBinaryAvailability('convert');
+      bool imagemagickAvailable = await checkBinaryAvailability('magick'); // Check for 'magick'
       if (!imagemagickAvailable) {
         logger.e(
           'ImageMagick is not installed or not found in PATH. Please install ImageMagick for image conversions.',
@@ -120,8 +120,19 @@ class ConversionUtils {
       // Construct ImageMagick convert command
       List<String> arguments = [inputPath, tempOutputPath];
 
-      // Execute ImageMagick convert command
-      final result = await Process.run('convert', arguments);
+      // If converting to SVG, check for potrace
+      if (format.toLowerCase() == 'svg') {
+        bool potraceAvailable = await checkBinaryAvailability('potrace');
+        if (!potraceAvailable) {
+          logger.e(
+            'Potrace is not installed or not found in PATH. Please install Potrace for JPG/PNG to SVG conversions.',
+          );
+          return {'success': false, 'tempOutputPath': ''};
+        }
+      }
+
+      // Execute ImageMagick command using 'magick'
+      final result = await Process.run('magick', ['convert', ...arguments]); // Use 'magick convert'
       if (result.exitCode == 0) {
         logger.i(
           'Image converted successfully to $tempOutputPath using ImageMagick',

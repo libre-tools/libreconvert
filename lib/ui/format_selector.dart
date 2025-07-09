@@ -20,8 +20,18 @@ class _FormatSelectorState extends State<FormatSelector> {
   String? selectedFormat;
 
   Map<String, List<String>> supportedFormats = {
-    'Image': ['PNG', 'JPG', 'BMP', 'GIF', 'WEBP', 'HEIC', 'TIFF'],
-    'Audio': ['MP3', 'WAV', 'FLAC', 'OGG', 'AAC', 'M4A'],
+    'Image': [
+      'PNG',
+      'JPG',
+      'BMP',
+      'GIF',
+      'WEBP',
+      'HEIC',
+      'TIFF',
+      'AVIF',
+      'SVG',
+    ],
+    'Audio': ['MP3', 'WAV', 'FLAC', 'OGG', 'AAC', 'M4A', 'OPUS'],
     'Video': ['MP4', 'MKV', 'AVI', 'MOV', 'WMV', 'FLV', 'GIF', 'WEBM'],
     'Document': [
       'PDF',
@@ -32,6 +42,7 @@ class _FormatSelectorState extends State<FormatSelector> {
       'HTML',
       'Markdown',
       'EPUB',
+      'DJVU',
     ],
   };
 
@@ -62,7 +73,7 @@ class _FormatSelectorState extends State<FormatSelector> {
       itemBuilder: (context, item) {
         return Text(item);
       },
-      popupConstraints: const BoxConstraints(maxHeight: 300, maxWidth: 200),
+      
       onChanged: (value) {
         setState(() {
           selectedFormat = value;

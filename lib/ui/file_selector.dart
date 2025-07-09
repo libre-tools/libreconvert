@@ -36,13 +36,13 @@ class _FileSelectorState extends State<FileSelector> {
       type: FileType.custom,
       allowedExtensions: [
         // Images
-        'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp',
+        'png', 'jpg', 'jpeg', 'gif', 'bmp', 'webp', 'avif', 'heif', 'heic', 'svg',
         // Audio
-        'mp3', 'wav', 'flac', 'ogg', 'aac', 'm4a',
+        'mp3', 'wav', 'flac', 'ogg', 'aac', 'm4a', 'opus',
         // Video
         'mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm',
         // Documents (excluding PDF)
-        'docx', 'odt', 'rtf', 'txt', 'html', 'md', 'epub',
+        'docx', 'odt', 'rtf', 'txt', 'html', 'md', 'epub', 'djvu',
       ],
     );
 
@@ -274,6 +274,10 @@ class _FileSelectorState extends State<FileSelector> {
                         'gif',
                         'bmp',
                         'webp',
+                        'avif', // Added avif
+                        'heif', // Added heif
+                        'heic', // Added heic
+                        'svg',  // Added svg
                       ].contains(extension)) {
                         previewIcon = Icons.image;
                       } else if ([
@@ -283,6 +287,7 @@ class _FileSelectorState extends State<FileSelector> {
                         'ogg',
                         'aac',
                         'm4a',
+                        'opus', // Added opus
                       ].contains(extension)) {
                         previewIcon = Icons.audiotrack;
                       } else if ([
@@ -305,6 +310,7 @@ class _FileSelectorState extends State<FileSelector> {
                         'html',
                         'markdown',
                         'epub',
+                        'djvu', // Added djvu
                       ].contains(extension)) {
                         previewIcon = Icons.description;
                       } else {
