@@ -188,6 +188,10 @@ class ConversionUtils {
         });
       }
 
+      // Add video filter to ensure width and height are divisible by 2
+      arguments.add('-vf');
+      arguments.add('scale=trunc(iw/2)*2:trunc(ih/2)*2');
+
       // Add output path with format extension
       arguments.add(tempOutputPath);
 

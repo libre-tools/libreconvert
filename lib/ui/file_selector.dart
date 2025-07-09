@@ -40,7 +40,7 @@ class _FileSelectorState extends State<FileSelector> {
         // Audio
         'mp3', 'wav', 'flac', 'ogg', 'aac', 'm4a',
         // Video
-        'mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv',
+        'mp4', 'mkv', 'avi', 'mov', 'wmv', 'flv', 'webm',
         // Documents (excluding PDF)
         'docx', 'odt', 'rtf', 'txt', 'html', 'md', 'epub',
       ],
@@ -293,6 +293,7 @@ class _FileSelectorState extends State<FileSelector> {
                         'wmv',
                         'flv',
                         'gif',
+                        'webm', // Added webm
                       ].contains(extension)) {
                         previewIcon = Icons.videocam;
                       } else if ([

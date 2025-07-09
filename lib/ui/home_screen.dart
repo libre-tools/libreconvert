@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
         } else if (['mp3', 'wav', 'flac', 'ogg'].contains(ext)) {
           currentFileType = 'audio';
           currentCategory = 'Audio';
-        } else if (['mp4', 'mkv', 'avi', 'mov'].contains(ext)) {
+        } else if (['mp4', 'mkv', 'avi', 'mov', 'webm'].contains(ext)) {
           currentFileType = 'video';
           currentCategory = 'Video';
         } else if (['md', 'html', 'pdf', 'docx', 'odt', 'txt'].contains(ext)) {

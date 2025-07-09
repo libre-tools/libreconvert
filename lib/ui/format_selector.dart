@@ -22,7 +22,7 @@ class _FormatSelectorState extends State<FormatSelector> {
   Map<String, List<String>> supportedFormats = {
     'Image': ['PNG', 'JPG', 'BMP', 'GIF', 'WEBP', 'HEIC', 'TIFF'],
     'Audio': ['MP3', 'WAV', 'FLAC', 'OGG', 'AAC', 'M4A'],
-    'Video': ['MP4', 'MKV', 'AVI', 'MOV', 'WMV', 'FLV', 'GIF'],
+    'Video': ['MP4', 'MKV', 'AVI', 'MOV', 'WMV', 'FLV', 'GIF', 'WEBM'],
     'Document': [
       'PDF',
       'DOCX',
