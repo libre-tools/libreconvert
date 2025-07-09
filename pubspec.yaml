@@ -6,7 +6,7 @@ repository: https://github.com/libre-tools/libreconvert
 # This line prevents the package from being accidentally published to pub.dev.
 publish_to: "none"
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ^3.8.1

@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:logger/logger.dart'; // Added logger import
+
+final logger = Logger(); // Initialize logger
 
 class ToolChecker {
   static Future<bool> isToolInstalled(String toolName) async {
@@ -11,7 +14,7 @@ class ToolChecker {
       }
       return result.exitCode == 0;
     } catch (e) {
-      print('Error checking tool $toolName: $e');
+      logger.e('Error checking tool $toolName: $e');
       return false;
     }
   }

@@ -3,6 +3,9 @@ import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
 import 'package:libreconvert/ui/home_screen.dart'; // Will navigate to this screen
 import 'package:libreconvert/utils/tool_checker.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:logger/logger.dart'; // Added logger import
+
+final logger = Logger(); // Initialize logger
 
 class ToolCheckScreen extends StatefulWidget {
   const ToolCheckScreen({super.key});
@@ -121,7 +124,7 @@ class _ToolCheckScreenState extends State<ToolCheckScreen>
                       await launchUrl(Uri.parse(url));
                     } else {
                       // Handle error: could not launch URL
-                      print('Could not launch $url');
+                      logger.e('Could not launch $url');
                     }
                   },
                   child: const Text('Install'),
