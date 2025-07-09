@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 import 'package:shadcn_flutter/shadcn_flutter.dart' as shadcn;
-import 'package:libreconvert/ui/home_screen.dart';
+import 'package:libreconvert/ui/tool_check_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         radius: 0.5,
       ),
       debugShowCheckedModeBanner: false,
-      home: const HomeScreen(),
+      home: const ToolCheckScreen(),
     );
   }
 }
