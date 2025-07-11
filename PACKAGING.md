@@ -67,7 +67,7 @@ Copy the `.desktop` file and the application icon to their respective locations 
 
 ```bash
 cp libreconvert.desktop packaging/usr/share/applications/libreconvert.desktop
-cp assets/app.png packaging/usr/share/icons/hicolor/512x512/apps/libreconvert.png
+cp assets/logo.png packaging/usr/share/icons/hicolor/512x512/apps/libreconvert.png
 ```
 
 ### 7. Generate Packages using fpm
