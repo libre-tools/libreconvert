@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2+1
+
+* Fix: Address ImageMagick 'convert' command conflict on Debian/Ubuntu.
+* General improvements and bug fixes.
+
 ## 1.0.0+1
 
 * Feat: Enhance format support, fix conversion issues, and improve UI responsiveness.
