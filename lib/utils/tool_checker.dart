@@ -30,7 +30,13 @@ class ToolChecker {
 
     final Map<String, bool> installedTools = {};
 
+    // Special handling for ImageMagick to check for either 'magick' or 'convert'
+    bool imagemagickFound = await isToolInstalled('magick') || await isToolInstalled('convert');
+    installedTools['imagemagick'] = imagemagickFound;
+
     for (var entry in toolExecutables.entries) {
+      if (entry.key == 'imagemagick') continue; // Skip imagemagick as it's handled above
+
       final toolName = entry.key;
       final executables = entry.value;
       bool found = false;

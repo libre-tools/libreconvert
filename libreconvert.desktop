@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=LibreConvert
+Comment=A powerful, offline-first file converter application built with Flutter for desktop platforms.
+Exec=/usr/local/bin/libreconvert
+Icon=libreconvert
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupWMClass=dev.libretools.convert.libreconvert
+Keywords=converter;file;image;audio;video;document;
+Maintainer=LibreTools <raja@libretools.dev>

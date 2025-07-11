@@ -97,6 +97,15 @@ class ConversionUtils {
     });
   }
 
+  static Future<String?> getImagemagickCommand() async {
+    if (await checkBinaryAvailability('magick')) {
+      return 'magick';
+    } else if (await checkBinaryAvailability('convert')) {
+      return 'convert';
+    }
+    return null;
+  }
+
   static Future<Map<String, dynamic>> convertImageWithPath(
     String inputPath,
     String outputPath,
@@ -104,8 +113,8 @@ class ConversionUtils {
   ) async {
     try {
       // Check if ImageMagick is available
-      bool imagemagickAvailable = await checkBinaryAvailability('magick'); // Check for 'magick'
-      if (!imagemagickAvailable) {
+      String? imagemagickCommand = await getImagemagickCommand();
+      if (imagemagickCommand == null) {
         logger.e(
           'ImageMagick is not installed or not found in PATH. Please install ImageMagick for image conversions.',
         );
@@ -131,15 +140,20 @@ class ConversionUtils {
         }
       }
 
-      // Execute ImageMagick command using 'magick'
-      final result = await Process.run('magick', ['convert', ...arguments]); // Use 'magick convert'
+      // Execute ImageMagick command using the determined command
+      final command = imagemagickCommand;
+      final fullArguments = (imagemagickCommand == 'magick') ? ['convert', ...arguments] : arguments;
+      logger.i('Executing ImageMagick command: $command ${fullArguments.join(' ')}');
+      final result = await Process.run(command, fullArguments);
       if (result.exitCode == 0) {
         logger.i(
           'Image converted successfully to $tempOutputPath using ImageMagick',
         );
         return {'success': true, 'tempOutputPath': tempOutputPath};
       } else {
-        logger.e('ImageMagick error: ${result.stderr}');
+        logger.e('ImageMagick command failed with exit code ${result.exitCode}');
+        logger.e('ImageMagick stderr: ${result.stderr}');
+        logger.e('ImageMagick stdout: ${result.stdout}');
         return {'success': false, 'tempOutputPath': ''};
       }
     } catch (e) {
